@@ -50,6 +50,8 @@ def alert_plugin_wrapper(alert: BaseAlert, user: USERS, stats: dict, execution: 
             'time_start_pretty': execution.time_created_str,
             'time_fin': None,
             'time_fin_pretty': None,
+            'time_duration': None,
+            'time_duration_pretty': None,
             'error_short': None,
             'error_med': None,
         },
@@ -73,6 +75,8 @@ def alert_plugin_wrapper(alert: BaseAlert, user: USERS, stats: dict, execution: 
     if execution.result is not None:
         data['execution']['time_fin'] = int(unix_timestamp(execution.result.time_fin_dt.timetuple()))
         data['execution']['time_fin_pretty'] = execution.result.time_fin_str
+        data['execution']['time_duration'] = execution.result.time_duration
+        data['execution']['time_duration_pretty'] = execution.result.time_duration_str
 
         if execution.result.error is not None:
             data['execution']['error_short'] = execution.result.error.short

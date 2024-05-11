@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from aw.api_endpoints.base import API_PERMISSION, GenericResponse, get_api_user, api_docs_put, api_docs_delete, \
-    api_docs_post, BaseResponse
+    api_docs_post
 from aw.utils.permission import has_manager_privileges
 from aw.model.alert import AlertPlugin, AlertGlobal, AlertGroup, AlertUser
 

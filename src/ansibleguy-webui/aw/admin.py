@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
 from rest_framework_api_key.admin import APIKey
 
+from aw.base import USERS
 from aw.model.api import AwAPIKey
 from aw.model.job import Job, JobExecution, JobExecutionResult, JobError, JobExecutionResultHost
 from aw.model.permission import JobPermission, JobPermissionMemberUser, JobPermissionMemberGroup, \
@@ -23,8 +23,8 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.unregister(APIKey)
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
+admin.site.unregister(USERS)
+admin.site.register(USERS, UserAdmin)
 
 admin.site.register(Job)
 admin.site.register(JobExecution)

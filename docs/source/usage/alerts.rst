@@ -79,6 +79,8 @@ There is a generic alert-plugin interface for custom solutions.
             "time_start_pretty": "2024-05-11 18:04:10 CEST",
             "time_fin": 1715450651,
             "time_fin_pretty": "2024-05-11 18:04:11 CEST",
+            "time_duration" 2,
+            "time_duration_pretty" "2s",
             "error_short": null,
             "error_med": null,
             "log_stdout": "/home/guy/.local/share/ansible-webui/test2_2024-05-11_18-04-10_ansible_stdout.log",

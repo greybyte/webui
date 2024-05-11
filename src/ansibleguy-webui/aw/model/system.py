@@ -1,7 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
+from aw.base import USERS
 from aw.model.base import BaseModel, CHOICES_BOOL, DEFAULT_NONE
 from aw.config.defaults import CONFIG_DEFAULTS
 from aw.config.environment import check_aw_env_var_is_set
@@ -119,7 +119,7 @@ def get_schema_metadata() -> SchemaMetadata:
 
 
 class UserExtended(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(USERS, on_delete=models.CASCADE)
     phone = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
 
