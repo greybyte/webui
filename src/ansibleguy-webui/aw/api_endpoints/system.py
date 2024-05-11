@@ -16,7 +16,7 @@ from aw.config.hardcoded import SECRET_HIDDEN
 class SystemConfigReadResponse(BaseResponse):
     # todo: fix static fields.. duplicate logic in model
 
-    # SystemConfig.form_fields
+    # SystemConfig.api_fields_read
     path_run = serializers.CharField()
     path_play = serializers.CharField()
     path_log = serializers.CharField()
@@ -38,6 +38,8 @@ class SystemConfigReadResponse(BaseResponse):
     mail_server = serializers.CharField()
     mail_transport = serializers.IntegerField()
     mail_user = serializers.CharField()
+    mail_sender = serializers.CharField()
+    mail_ssl_verify = serializers.BooleanField()
 
 
 class SystemConfigWriteRequest(serializers.ModelSerializer):
@@ -64,7 +66,7 @@ class APISystemConfig(APIView):
         del request
         merged_config = {'read_only_settings': SystemConfig.api_fields_read_only}
 
-        for field in SystemConfig.form_fields + merged_config['read_only_settings']:
+        for field in SystemConfig.api_fields_read + merged_config['read_only_settings']:
             merged_config[field] = config[field]
 
         merged_config['read_only_settings'] += SystemConfig.get_set_env_vars()

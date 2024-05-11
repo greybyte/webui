@@ -22,15 +22,16 @@ MAIL_TRANSPORT_TYPE_CHOICES = [
 # NOTE: add default-values to config.defaults.CONFIG_DEFAULTS
 class SystemConfig(BaseModel):
     SECRET_ATTRS = ['mail_pass']
-    form_fields = [
+    api_fields_read = [
         'path_run', 'path_play', 'path_log', 'timezone', 'run_timeout', 'session_timeout', 'path_ansible_config',
         'path_ssh_known_hosts', 'debug', 'logo_url', 'ara_server', 'global_environment_vars',
-        'mail_server', 'mail_transport', 'mail_user',
+        'mail_server', 'mail_transport', 'mail_ssl_verify', 'mail_sender', 'mail_user',
     ]
 
     # NOTE: 'AW_DB' is needed to get this config from DB and 'AW_SECRET' cannot be saved because of security breach
-    api_fields_write = form_fields.copy()
+    api_fields_write = api_fields_read.copy()
     api_fields_write.extend(SECRET_ATTRS)
+    form_fields = api_fields_read.copy()
     api_fields_read_only = ['db', 'db_migrate', 'serve_static', 'deployment', 'version']
 
     path_run = models.CharField(max_length=500, default='/tmp/ansible-webui')
@@ -49,6 +50,8 @@ class SystemConfig(BaseModel):
     mail_transport = models.PositiveSmallIntegerField(
         choices=MAIL_TRANSPORT_TYPE_CHOICES, default=MAIL_TRANSPORT_TYPE_PLAIN,
     )
+    mail_ssl_verify = models.BooleanField(default=True, choices=CHOICES_BOOL)
+    mail_sender = models.CharField(max_length=300, **DEFAULT_NONE)
     mail_user = models.CharField(max_length=300, **DEFAULT_NONE)
     _enc_mail_pass = models.CharField(max_length=500, **DEFAULT_NONE)
 

@@ -117,11 +117,8 @@ def setting_alert_plugin_edit(request, plugin_id: int = None) -> HttpResponse:
     )
 
 
-def _choices_alert_user_plugins() -> list:
-    return [
-        (plugin.id, plugin.name)
-        for plugin in AlertUser.objects.all()
-    ]
+def _choices_alert_plugins() -> list:
+    return [(plugin.id, plugin.name) for plugin in AlertPlugin.objects.all()]
 
 
 class SettingAlertUserForm(forms.ModelForm):
@@ -140,7 +137,7 @@ class SettingAlertUserForm(forms.ModelForm):
     plugin = forms.ChoiceField(
         required=False,
         widget=forms.Select,
-        choices=_choices_alert_user_plugins,
+        choices=_choices_alert_plugins,
     )
 
 
@@ -171,13 +168,6 @@ def setting_alert_user_edit(request, alert_id: int = None) -> HttpResponse:
     )
 
 
-def _choices_alert_group_plugins() -> list:
-    return [
-        (plugin.id, plugin.name)
-        for plugin in AlertGroup.objects.all()
-    ]
-
-
 class SettingAlertGroupForm(forms.ModelForm):
     class Meta:
         model = AlertGroup
@@ -194,7 +184,7 @@ class SettingAlertGroupForm(forms.ModelForm):
     plugin = forms.ChoiceField(
         required=False,
         widget=forms.Select,
-        choices=_choices_alert_group_plugins,
+        choices=_choices_alert_plugins,
     )
     group = forms.ChoiceField(
         required=True,
@@ -230,13 +220,6 @@ def setting_alert_group_edit(request, alert_id: int = None) -> HttpResponse:
     )
 
 
-def _choices_alert_global_plugins() -> list:
-    return [
-        (plugin.id, plugin.name)
-        for plugin in AlertGlobal.objects.all()
-    ]
-
-
 class SettingAlertGlobalForm(forms.ModelForm):
     class Meta:
         model = AlertGlobal
@@ -253,7 +236,7 @@ class SettingAlertGlobalForm(forms.ModelForm):
     plugin = forms.ChoiceField(
         required=False,
         widget=forms.Select,
-        choices=_choices_alert_global_plugins,
+        choices=_choices_alert_plugins,
     )
 
 

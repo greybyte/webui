@@ -49,7 +49,7 @@ def get_job_execution_serialized(execution: JobExecution) -> dict:
     serialized['job_name'] = execution.job.name
     serialized['job_comment'] = execution.job.comment
     serialized['user'] = execution.user.id if execution.user is not None else None
-    serialized['user_name'] = execution.user.username if execution.user is not None else 'Scheduled'
+    serialized['user_name'] = execution.user_name
     serialized['time_start'] = execution.time_created_str
     serialized['time_fin'] = None
     serialized['failed'] = None

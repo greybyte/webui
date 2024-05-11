@@ -151,6 +151,15 @@ if LISTEN_ADDRESS != '127.0.0.1':
         f'https://{LISTEN_ADDRESS}:{PORT_WEB}'
     ])
 
+
+def get_main_web_address() -> str:
+    if 'AW_HOSTNAMES' not in environ:
+        return f'http://localhost:{PORT_WEB}'
+
+    _hostname = environ['AW_HOSTNAMES'].split(',', 1)[0]
+    return f'https://{_hostname}:{PORT_WEB}'
+
+
 if 'AW_PROXY' in environ:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     USE_X_FORWARDED_HOST = True

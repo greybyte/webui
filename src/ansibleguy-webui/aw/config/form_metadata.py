@@ -94,6 +94,8 @@ FORM_LABEL = {
             'ssl_file_key': 'SSL Private-Key',
             'mail_server': 'Mail Server',
             'mail_transport': 'Mail Transport',
+            'mail_ssl_verify': 'Mail SSL Verification',
+            'mail_sender': 'Mail Sender Address',
             'mail_user': 'Mail Login Username',
             'mail_pass': 'Mail Login Password',
         }
@@ -211,7 +213,12 @@ FORM_HELP = {
                           'Documentation - Integrations</a>',
             'global_environment_vars': 'Set environmental variables that will be added to every job execution. '
                                        'Comma-separated list of key-value pairs. (VAR1=TEST1,VAR2=0)',
-            'mail_server': 'Mail Server to use for Alert Mails',
+            'mail_server': 'Mail Server to use for Alert Mails. Combination of server and port (default 25)',
+            'mail_ssl_verify': 'En- or disable SSL certificate verification. '
+                               'If enabled - the certificate SAN has to contain the mail-server FQDN '
+                               'and must be issued from a trusted CA',
+            'mail_sender': 'Mail Sender Address to use for Alert Mails',
+            'mail_transport': 'The default port mapping is: 25 = Unencrypted, 465 = SSL, 587 = StartTLS',
         }
     }
 }

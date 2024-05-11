@@ -7,6 +7,7 @@ from aw.model.job import Job, JobExecution, JobExecutionResult
 from aw.execute.play_util import runner_cleanup, runner_prep, parse_run_result, failure, runner_logs
 from aw.execute.util import get_path_run, is_execution_status, job_logs
 from aw.execute.repository import ExecuteRepository
+from aw.execute.alert import Alert
 from aw.utils.util import datetime_w_tz, is_null, timed_lru_cache  # get_ansible_versions
 from aw.utils.handlers import AnsibleConfigError
 from aw.utils.debug import log
@@ -63,6 +64,7 @@ def ansible_playbook(job: Job, execution: (JobExecution, None)):
         del runner
 
         runner_cleanup(execution=execution, path_run=path_run, exec_repo=exec_repo)
+        Alert(job=job, execution=execution).go()
 
     except (OSError, AnsibleConfigError) as err:
         tb = traceback.format_exc(limit=1024)
@@ -70,4 +72,5 @@ def ansible_playbook(job: Job, execution: (JobExecution, None)):
             execution=execution, exec_repo=exec_repo, path_run=path_run, result=result,
             error_s=str(err), error_m=tb,
         )
+        Alert(job=job, execution=execution).go()
         raise

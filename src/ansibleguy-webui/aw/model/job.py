@@ -255,6 +255,10 @@ class JobExecution(BaseJob):
     def log_stderr_repo_url(self) -> str:
         return f"/api/job/{self.job.id}/{self.id}/log?type=stderr_repo"
 
+    @property
+    def user_name(self) -> str:
+        return self.user.username if self.user is not None else 'Scheduled'
+
 
 class JobQueue(BareModel):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='jobqueue_fk_job')

@@ -6,9 +6,20 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from aw.api_endpoints.base import API_PERMISSION, GenericResponse, get_api_user, api_docs_put, api_docs_delete, \
-    api_docs_post
+    api_docs_post, BaseResponse
 from aw.utils.permission import has_manager_privileges
 from aw.model.alert import AlertPlugin, AlertGlobal, AlertGroup, AlertUser
+
+
+class BaseAlertWriteRequest(BaseResponse):
+    # NOTE: not using modelserializer because issues with DRF and PUT unique constraints
+    name = serializers.CharField(required=True)
+    alert_type = serializers.IntegerField()
+    condition = serializers.IntegerField()
+    jobs = serializers.ListSerializer(child=serializers.IntegerField(), required=False)
+    jobs_all = serializers.BooleanField()
+    # todo: require alert to be provided if alert-type is plugin
+    plugin = serializers.IntegerField(required=False)
 
 
 class AlertPluginReadWrite(serializers.ModelSerializer):
@@ -170,10 +181,8 @@ class AlertUserReadResponse(serializers.ModelSerializer):
     condition_name = serializers.CharField()
 
 
-class AlertUserWriteRequest(serializers.ModelSerializer):
-    class Meta:
-        model = AlertUser
-        fields = AlertUser.api_fields_write
+class AlertUserWriteRequest(BaseAlertWriteRequest):
+    user = serializers.IntegerField(required=True)
 
 
 class APIAlertUser(GenericAPIView):
@@ -324,12 +333,6 @@ class AlertGlobalReadResponse(serializers.ModelSerializer):
     condition_name = serializers.CharField()
 
 
-class AlertGlobalWriteRequest(serializers.ModelSerializer):
-    class Meta:
-        model = AlertGlobal
-        fields = AlertGlobal.api_fields_write
-
-
 class APIAlertGlobal(GenericAPIView):
     http_method_names = ['get', 'post']
     serializer_class = AlertGlobalReadResponse
@@ -360,7 +363,7 @@ class APIAlertGlobal(GenericAPIView):
                 status=403,
             )
 
-        serializer = AlertGlobalWriteRequest(data=request.data)
+        serializer = BaseAlertWriteRequest(data=request.data)
 
         if not serializer.is_valid():
             return Response(
@@ -408,7 +411,7 @@ class APIAlertGlobalItem(GenericAPIView):
         return Response(data={'msg': f"Alert with ID {alert_id} does not exist"}, status=404)
 
     @extend_schema(
-        request=AlertGlobalWriteRequest,
+        request=BaseAlertWriteRequest,
         responses=api_docs_put('Alert'),
         summary='Modify an Alert.',
         operation_id='alert_global_edit',
@@ -421,7 +424,7 @@ class APIAlertGlobalItem(GenericAPIView):
                 status=403,
             )
 
-        serializer = AlertGlobalWriteRequest(data=request.data)
+        serializer = BaseAlertWriteRequest(data=request.data)
 
         if not serializer.is_valid():
             return Response(
@@ -484,10 +487,8 @@ class AlertGroupReadResponse(serializers.ModelSerializer):
     group_name = serializers.CharField()
 
 
-class AlertGroupWriteRequest(serializers.ModelSerializer):
-    class Meta:
-        model = AlertGroup
-        fields = AlertGroup.api_fields_write
+class AlertGroupWriteRequest(BaseAlertWriteRequest):
+    group = serializers.IntegerField(required=True)
 
 
 class APIAlertGroup(GenericAPIView):

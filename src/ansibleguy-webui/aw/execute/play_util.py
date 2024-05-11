@@ -274,6 +274,6 @@ def failure(
     result.failed = True
     result.error = job_error
     result.save()
-
     execution.save()
-    runner_cleanup(execution=JobExecution ,path_run=path_run, exec_repo=exec_repo)
+
+    runner_cleanup(execution=execution, path_run=path_run, exec_repo=exec_repo)

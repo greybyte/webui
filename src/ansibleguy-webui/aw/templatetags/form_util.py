@@ -46,6 +46,12 @@ def form_field_is_dropdown(bf: BoundField) -> bool:
     return isinstance(bf.field.widget, Select)
 
 
+# todo: change boolean fields to checkboxes
+# @register.filter
+# def form_field_is_checkbox(bf: BoundField) -> bool:
+#     return isinstance(bf.field.widget, CheckboxInput)
+
+
 def get_form_required(bf: BoundField) -> str:
     return ' required' if bf.field.required else ''
 
@@ -56,7 +62,7 @@ def get_form_field_value(bf: BoundField, existing: dict) -> (str, None):
         return None
 
     if bf.name in FORM_SECRET_FIELDS:
-        enc_field = '_enc_' + bf.name
+        enc_field = f'_enc_{bf.name}'
         if enc_field in existing and not is_set(existing[enc_field]):
             return None
 
@@ -137,7 +143,7 @@ def get_form_field_input(bf: BoundField, existing: dict) -> str:
     elif bf.field.initial is not None:
         field_value = f'value="{bf.field.initial}"'
 
-    if bf.name.find('_pass') != -1 or bf.name.find('_key') != -1:
+    if bf.name in FORM_SECRET_FIELDS or bf.name.find('_pass') != -1 or bf.name.find('_key') != -1:
         field_attrs += ' type="password"'
 
     elif bf.name in AW_VALIDATIONS['file_system_browse']:

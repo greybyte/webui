@@ -5,12 +5,13 @@ CHOICES_BOOL = (
     (False, 'No')
 )
 DEFAULT_NONE = {'null': True, 'default': None, 'blank': True}
+JOB_EXEC_STATUS_SUCCESS = 4
 CHOICES_JOB_EXEC_STATUS = [
     (0, 'Waiting'),
     (1, 'Starting'),
     (2, 'Running'),
     (3, 'Failed'),
-    (4, 'Finished'),
+    (JOB_EXEC_STATUS_SUCCESS, 'Finished'),
     (5, 'Stopping'),
     (6, 'Stopped'),
 ]

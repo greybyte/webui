@@ -5,6 +5,8 @@ from os import open as open_file
 from pathlib import Path
 from functools import lru_cache, wraps
 from math import ceil
+from re import compile as regex_compile
+from re import IGNORECASE
 
 from pkg_resources import get_distribution
 from crontab import CronTab
@@ -146,3 +148,44 @@ def pretty_timedelta_str(sec: (int, float)) -> str:
         return f'{minutes}m {sec}s'
 
     return f'{sec}s'
+
+# source: https://validators.readthedocs.io/en/latest/_modules/validators/email.html
+EMAIL_REGEX_USER = regex_compile(
+    # dot-atom
+    r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+"
+    r"(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*$"
+    # quoted-string
+    r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|'
+    r"""\\[\001-\011\013\014\016-\177])*"$)""",
+    IGNORECASE
+)
+EMAIL_REGEX_DOMAIN = regex_compile(
+    # domain
+    r'(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
+    r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?$)'
+    # literal form, ipv4 address (SMTP 4.1.3)
+    r'|^\[(25[0-5]|2[0-4]\d|[0-1]?\d?\d)'
+    r'(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}\]$',
+    IGNORECASE
+)
+
+
+def valid_email(email: str) -> bool:
+    if not email or '@' not in email:
+        return False
+
+    user_part, domain_part = email.rsplit('@', 1)
+
+    if not EMAIL_REGEX_USER.match(user_part):
+        return False
+
+    if not EMAIL_REGEX_DOMAIN.match(domain_part):
+        # Try for possible IDN domain-part
+        try:
+            domain_part = domain_part.encode('idna').decode('ascii')
+            return EMAIL_REGEX_DOMAIN.match(domain_part)
+
+        except UnicodeError:
+            return False
+
+    return True

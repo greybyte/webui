@@ -9,8 +9,9 @@ from aw.config.defaults import CONFIG_DEFAULTS
 from aw.utils.http import ui_endpoint_wrapper
 from aw.config.form_metadata import FORM_LABEL, FORM_HELP
 from aw.config.environment import AW_ENV_VARS, AW_ENV_VARS_SECRET
-from aw.model.system import SystemConfig
+from aw.model.system import SystemConfig, get_config_from_db
 from aw.utils.deployment import deployment_dev
+from aw.model.base import CHOICES_BOOL
 
 
 class SystemConfigForm(forms.ModelForm):
@@ -36,7 +37,9 @@ class SystemConfigForm(forms.ModelForm):
         choices=[(tz, tz) for tz in sorted(all_timezones)],
         label=FORM_LABEL['system']['config']['timezone'],
     )
-    debug = forms.BooleanField(initial=CONFIG_DEFAULTS['debug'] or deployment_dev())
+    debug = forms.ChoiceField(
+        initial=CONFIG_DEFAULTS['debug'] or deployment_dev(), choices=CHOICES_BOOL,
+    )
     mail_pass = forms.CharField(
         max_length=100, required=False, label=Meta.labels['mail_pass'],
     )
@@ -49,11 +52,11 @@ def system_config(request) -> HttpResponse:
     form_method = 'put'
     form_api = 'config'
 
+    existing = {key: config[key] for key in SystemConfig.form_fields}
+    existing['_enc_mail_pass'] = get_config_from_db()._enc_mail_pass
     config_form_html = config_form.render(
         template_name='forms/snippet.html',
-        context={'form': config_form, 'existing': {
-            key: config[key] for key in SystemConfig.form_fields
-        }},
+        context={'form': config_form, 'existing': existing},
     )
     return render(
         request, status=200, template_name='system/config.html',
