@@ -15,7 +15,7 @@ from aw.api_endpoints.credentials import are_global_credentials
 from aw.utils.permission import has_job_permission, has_credentials_permission
 from aw.utils.util import get_choice_key_by_value
 from aw.config.form_metadata import FORM_LABEL, FORM_HELP
-from aw.views.base import choices_global_credentials, choices_repositories, choices_forms
+from aw.views.base import choices_global_credentials, choices_repositories
 
 
 class JobForm(forms.ModelForm):
@@ -40,14 +40,6 @@ class JobForm(forms.ModelForm):
         choices=choices_repositories,
         label=Meta.labels['repository'],
         help_text=Meta.help_texts['repository'],
-    )
-
-    form = forms.ChoiceField(
-        required=False,
-        widget=forms.Select,
-        choices=choices_forms,
-        label=Meta.labels['form'],
-        help_text=Meta.help_texts['form'],
     )
 
     # form not picking up regex-validator
