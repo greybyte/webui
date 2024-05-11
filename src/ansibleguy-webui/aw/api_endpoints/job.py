@@ -26,6 +26,8 @@ class JobWriteRequest(serializers.ModelSerializer):
         model = Job
         fields = Job.api_fields_write
 
+    name = serializers.CharField(validators=[])  # uc on update
+
 
 def _find_job(job_id: int) -> (Job, None):
     try:

@@ -14,7 +14,7 @@ from aw.settings import get_main_web_address
 from aw.model.system import MAIL_TRANSPORT_TYPE_SSL, MAIL_TRANSPORT_TYPE_STARTTLS
 
 
-def _email_send(server: SMTP, user: USERS, stats: list[dict], execution: JobExecution):
+def _email_send(server: SMTP, user: USERS, stats: dict, execution: JobExecution):
     server.login(user=config['mail_user'], password=config['mail_pass'])
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f"Ansible WebUI Alert - Job '{execution.job.name}' - {execution.status_name}"
@@ -65,7 +65,7 @@ Raw stats:
     )
 
 
-def alert_plugin_email(user: USERS, stats: list[dict], execution: JobExecution):
+def alert_plugin_email(user: USERS, stats: dict, execution: JobExecution):
     if user.email.endswith('@localhost') or not valid_email(user.email):
         log(msg=f"User has an invalid email address configured: {user.username} ({user.email})", level=3)
         return

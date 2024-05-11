@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from aw.model.base import BaseModel, CHOICES_BOOL, DEFAULT_NONE
@@ -115,3 +116,14 @@ def get_schema_metadata() -> SchemaMetadata:
         metadata.save()
 
     return metadata
+
+
+class UserExtended(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user'], name='user_extended_unique')
+        ]

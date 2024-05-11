@@ -43,7 +43,13 @@ class Alert:
 
     def _route(self, alert: BaseAlert, user: USERS):
         if alert.alert_type == ALERT_TYPE_PLUGIN:
-            alert_plugin_wrapper(alert=alert, user=user, stats=self.stats, execution=self.execution)
+            alert_plugin_wrapper(
+                alert=alert,
+                user=user,
+                stats=self.stats,
+                execution=self.execution,
+                failed=self.failed,
+            )
 
         else:
             alert_plugin_email(user=user, stats=self.stats, execution=self.execution)

@@ -1,3 +1,4 @@
+from datetime import datetime
 from datetime import timedelta
 
 from crontab import CronTab
@@ -136,11 +137,19 @@ class JobExecutionResult(BareModel):
         return datetime_from_db_str(dt=self.time_fin, fmt=SHORT_TIME_FORMAT) + f" {config['timezone']}"
 
     @property
+    def time_start_dt(self) -> datetime:
+        return datetime_from_db(self.time_start)
+
+    @property
+    def time_fin_dt(self) -> datetime:
+        return datetime_from_db(self.time_fin)
+
+    @property
     def time_duration(self) -> timedelta:
         if is_null(self.time_fin):
             return timedelta(0)
 
-        return datetime_from_db(self.time_fin) - datetime_from_db(self.time_start)
+        return self.time_fin_dt - self.time_start_dt
 
     @property
     def time_duration_str(self) -> str:
@@ -231,6 +240,10 @@ class JobExecution(BaseJob):
     @staticmethod
     def status_id_from_name(name: str) -> int:
         return get_choice_key_by_value(choices=CHOICES_JOB_EXEC_STATUS, find=name)
+
+    @property
+    def time_created_dt(self) -> datetime:
+        return datetime_from_db(self.created)
 
     @property
     def time_created_str(self) -> str:

@@ -215,7 +215,7 @@ def create_first_superuser():
             log_warn('Make sure to change the password!')
 
 
-def create_privileged_groups():
+def create_manager_groups():
     # pylint: disable=C0415
     from django.contrib.auth.models import Group
     for grp in GRP_MANAGER.values():
