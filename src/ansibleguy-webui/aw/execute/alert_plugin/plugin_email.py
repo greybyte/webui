@@ -78,7 +78,6 @@ def alert_plugin_email(user: USERS, stats: list[dict], execution: JobExecution):
         port = 25
 
     try:
-        print(f"Alert user {user.username} via email ({server}:{port} => {user.email})")
         ssl_context = ssl.create_default_context()
         if config['mail_ssl_verify']:
             ssl_context.check_hostname = True

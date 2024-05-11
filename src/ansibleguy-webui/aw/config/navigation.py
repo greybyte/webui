@@ -29,7 +29,7 @@ NAVIGATION = {
             'login': False,
         },
         'DON': {
-            'element': '<i class="fas fa-coins fa-2x aw-nav-right-icon" title="Tip Me"></i>',
+            'element': '<i class="fas fa-coins fa-2x aw-nav-right-icon" title="Support the project"></i>',
             'url': 'https://ko-fi.com/ansible0guy',
             'login': False,
         },
