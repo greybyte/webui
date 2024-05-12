@@ -21,19 +21,13 @@ Options are:
 
 * **Global** rules - all users are notified (*if they have the privilege to view the job*)
 
-----
 
-Media
-*****
-
-There are currently two types of alerts.
-
-E-Mail and plugins.
+There are currently two types of alerts: E-Mail and plugins.
 
 ----
 
 E-Mail
-======
+******
 
 You need to configure your mailserver at the :code:`System - Config` page.
 
@@ -46,7 +40,7 @@ After that you can receive e-mails on job finish/failure.
 ----
 
 Plugins
-=======
+*******
 
 There is a generic alert-plugin interface for custom solutions.
 
@@ -130,7 +124,7 @@ There is a generic alert-plugin interface for custom solutions.
 ----
 
 Example Plugin
---------------
+==============
 
     .. code-block:: python3
 

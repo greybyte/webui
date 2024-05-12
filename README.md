@@ -110,11 +110,11 @@ See also: [Contributing](https://github.com/ansibleguy/webui/blob/latest/CONTRIB
 
     - [x] User-specific job credentials
 
-  - [ ] Alerting on Failure
+  - [x] Alerting on Failure
 
-    - [ ] E-Mail
+    - [x] E-Mail
 
-    - [ ] Support for external Plugins (*simple Interface for Scripts*)
+    - [x] Support for external Plugins (*simple Interface for Scripts*)
 
 - [ ] WebUI
 
