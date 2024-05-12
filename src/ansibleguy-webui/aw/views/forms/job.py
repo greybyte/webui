@@ -120,7 +120,7 @@ class CredentialGlobalForm(forms.ModelForm):
         max_length=100, required=False, label=Meta.labels['connect_pass'],
     )
     ssh_key = forms.CharField(
-        max_length=2000, required=False, label=Meta.labels['ssh_key'],
+        max_length=5000, required=False, label=Meta.labels['ssh_key'],
     )
 
 
