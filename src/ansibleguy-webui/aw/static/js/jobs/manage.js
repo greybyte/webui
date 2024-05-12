@@ -79,7 +79,7 @@ function updateApiTableDataJob(row, row2, entry) {
 }
 
 $( document ).ready(function() {
-    apiEndpoint = "/api/job?executions=true&execution_count=10";
+    apiEndpoint = "/api/job?executions=true&execution_count=1";
     fetchApiTableData(apiEndpoint, updateApiTableDataJob, true);
     setInterval('fetchApiTableData(apiEndpoint, updateApiTableDataJob, true)', (DATA_REFRESH_SEC * 1000));
 });

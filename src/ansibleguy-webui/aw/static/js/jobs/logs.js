@@ -30,9 +30,6 @@ function addLogLines($this) {
 
 function updateApiTableDataJobLogs(row, row2, entry) {
     row.innerHTML = document.getElementById(ELEM_ID_TMPL_ROW).innerHTML;
-    if (entryIsFiltered(entry.job)) {
-        row.setAttribute("hidden", "hidden");
-    }
 
     row.setAttribute("id_job", entry.job);
     row.setAttribute("id_execution", entry.id);
@@ -122,10 +119,14 @@ $( document ).ready(function() {
         setInterval('addLogLines($this)', (DATA_REFRESH_SEC * 1000));
     });
     executionCount = 20;
-    if (HTTP_PARAMS.has('filter')) {
-        executionCount = 50;
-    }
     apiEndpoint = "/api/job_exec?execution_count=" + executionCount;
-    fetchApiTableData(apiEndpoint, updateApiTableDataJobLogs, true, null, null, null, true);
-    setInterval('fetchApiTableData(apiEndpoint, updateApiTableDataJobLogs, true, null, null, null, true)', (DATA_REFRESH_SEC * 1000));
+    if (HTTP_PARAMS.has('job')) {
+        dataSubKey = 'executions';
+        apiEndpoint = "/api/job/" + HTTP_PARAMS.get('job') + "?executions=true&execution_count=" + executionCount;
+        fetchApiTableData(apiEndpoint, updateApiTableDataJobLogs, true, null, null, dataSubKey, true);
+        setInterval('fetchApiTableData(apiEndpoint, updateApiTableDataJobLogs, true, null, null, dataSubKey, true)', (DATA_REFRESH_SEC * 1000));
+    } else {
+        fetchApiTableData(apiEndpoint, updateApiTableDataJobLogs, true, null, null, null, true);
+        setInterval('fetchApiTableData(apiEndpoint, updateApiTableDataJobLogs, true, null, null, null, true)', (DATA_REFRESH_SEC * 1000));
+    }
 });
