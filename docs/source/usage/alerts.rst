@@ -69,28 +69,28 @@ There is a generic alert-plugin interface for custom solutions.
             "name": "ansible",
             "first_name": "",
             "last_name": "",
-            "email": "ansible@localhost",
+            "email": "guy@ansibleguy.net",
             "phone": null,
-            "description": null,
+            "description": "test",
             "is_active": true,
-            "last_login": 1715445321,
+            "last_login": 1715487270,
             "groups": []
           },
           "execution": {
-            "failed": false,
-            "status": "Finished",
+            "failed": true,
+            "status": "Failed",
             "job_name": "test2",
             "user_name": "ansible",
-            "time_start": 1715450650,
-            "time_start_pretty": "2024-05-11 18:04:10 CEST",
-            "time_fin": 1715450651,
-            "time_fin_pretty": "2024-05-11 18:04:11 CEST",
-            "time_duration": 1.036579,
-            "time_duration_pretty": "2s",
+            "time_start": 1715502006,
+            "time_start_pretty": "2024-05-12 08:20:06 CEST",
+            "time_fin": 1715502007,
+            "time_fin_pretty": "2024-05-12 08:20:07 CEST",
+            "time_duration": 0.845428,
+            "time_duration_pretty": "1s",
             "error_short": null,
             "error_med": null,
-            "log_stdout": "/home/guy/.local/share/ansible-webui/test2_2024-05-11_18-04-10_ansible_stdout.log",
-            "log_stdout_url": "http://localhost:8000/api/job/1/17/log?type=stdout",
+            "log_stdout": "/home/guy/.local/share/ansible-webui/test2_2024-05-12_08-20-06_ansible_stdout.log",
+            "log_stdout_url": "http://localhost:8000/api/job/1/85/log?type=stdout",
             "log_stderr": null,
             "log_stderr_url": null,
             "log_stdout_repo": null,
@@ -98,12 +98,20 @@ There is a generic alert-plugin interface for custom solutions.
             "log_stderr_repo": null,
             "log_stderr_repo_url": null
           },
+          "errors": {
+            "html": [
+              "<span class=\"aw-log-err\">fatal: [localhost]: FAILED! => {\"changed\": false, \"msg\": \"Just failing\"}</span>\n"
+            ],
+            "text": [
+              "fatal: [localhost]: FAILED! = {changed: false, msg: Just failing}"
+            ]
+          },
           "stats": {
             "localhost": {
               "unreachable": false,
               "tasks_skipped": 3,
-              "tasks_ok": 1,
-              "tasks_failed": 0,
+              "tasks_ok": 0,
+              "tasks_failed": 1,
               "tasks_rescued": 0,
               "tasks_ignored": 0,
               "tasks_changed": 0
@@ -114,6 +122,8 @@ There is a generic alert-plugin interface for custom solutions.
 * Create a plugin at :code:`Settings - Alerts` that points to your executable
 
 * Link the plugin in alerts
+
+* You can use the user attributes :code:`phone` and :code:`description` to add user-specific information your script might need.
 
 * Test it
 
@@ -144,4 +154,3 @@ Example Plugin
                     pass
 
         sys_exit(0)
-
