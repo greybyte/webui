@@ -10,6 +10,7 @@
   * Plugin System
 * Credential categories
 * Fix for SSH-RSA key usage (*error in libcrypto*)
+* Fix for [Log-View API usage](https://github.com/ansibleguy/webui/issues/36)
 
 ----
 

@@ -5,10 +5,23 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
+from aw.model.job import Job
 from aw.api_endpoints.base import API_PERMISSION, GenericResponse, get_api_user, api_docs_put, api_docs_delete, \
     api_docs_post
 from aw.utils.permission import has_manager_privileges
-from aw.model.alert import AlertPlugin, AlertGlobal, AlertGroup, AlertUser
+from aw.model.alert import BaseAlert, AlertPlugin, AlertGlobal, AlertGroup, AlertUser
+
+
+def update_jobs(alert: BaseAlert, job_ids: list):
+    jobs = []
+    for job_id in job_ids:
+        try:
+            jobs.append(Job.objects.get(id=job_id))
+
+        except ObjectDoesNotExist:
+            continue
+
+    alert.jobs.set(jobs)
 
 
 class AlertPluginReadWrite(serializers.ModelSerializer):
@@ -161,6 +174,15 @@ class APIAlertPluginItem(GenericAPIView):
         return Response(data={'msg': f"Alert-Plugin with ID {plugin_id} does not exist"}, status=404)
 
 
+class BaseAlertWriteRequest(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['jobs'] = serializers.MultipleChoiceField(choices=[job.id for job in Job.objects.all()])
+
+    name = serializers.CharField(validators=[])  # uc on update
+    jobs = serializers.MultipleChoiceField(allow_blank=True, choices=[])
+
+
 class AlertUserReadResponse(serializers.ModelSerializer):
     class Meta:
         model = AlertUser
@@ -170,12 +192,10 @@ class AlertUserReadResponse(serializers.ModelSerializer):
     condition_name = serializers.CharField()
 
 
-class AlertUserWriteRequest(serializers.ModelSerializer):
+class AlertUserWriteRequest(BaseAlertWriteRequest):
     class Meta:
         model = AlertUser
         fields = AlertUser.api_fields_write
-
-    name = serializers.CharField(validators=[])  # uc on update
 
 
 class APIAlertUser(GenericAPIView):
@@ -285,6 +305,7 @@ class APIAlertUserItem(GenericAPIView):
             )
 
         try:
+            update_jobs(alert=alert, job_ids=serializer.validated_data.pop('jobs'))
             AlertUser.objects.filter(id=alert.id).update(
                 **{**serializer.validated_data, 'user': user.id}
             )
@@ -326,12 +347,10 @@ class AlertGlobalReadResponse(serializers.ModelSerializer):
     condition_name = serializers.CharField()
 
 
-class AlertGlobalWriteRequest(serializers.ModelSerializer):
+class AlertGlobalWriteRequest(BaseAlertWriteRequest):
     class Meta:
         model = AlertGlobal
         fields = AlertGlobal.api_fields_write
-
-    name = serializers.CharField(validators=[])  # uc on update
 
 
 class APIAlertGlobal(GenericAPIView):
@@ -446,6 +465,7 @@ class APIAlertGlobalItem(GenericAPIView):
             )
 
         try:
+            update_jobs(alert=alert, job_ids=serializer.validated_data.pop('jobs'))
             AlertGlobal.objects.filter(id=alert.id).update(**serializer.validated_data)
             return Response(data={'msg': f"Alert '{alert.name}' updated"}, status=200)
 
@@ -488,12 +508,10 @@ class AlertGroupReadResponse(serializers.ModelSerializer):
     group_name = serializers.CharField()
 
 
-class AlertGroupWriteRequest(serializers.ModelSerializer):
+class AlertGroupWriteRequest(BaseAlertWriteRequest):
     class Meta:
         model = AlertGroup
         fields = AlertGroup.api_fields_write
-
-    name = serializers.CharField(validators=[])  # uc on update
 
 
 class APIAlertGroup(GenericAPIView):
@@ -614,6 +632,7 @@ class APIAlertGroupItem(GenericAPIView):
             )
 
         try:
+            update_jobs(alert=alert, job_ids=serializer.validated_data.pop('jobs'))
             AlertGroup.objects.filter(id=alert.id).update(**serializer.validated_data)
             return Response(data={'msg': f"Alert '{alert.name}' updated"}, status=200)
 

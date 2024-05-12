@@ -114,3 +114,59 @@ python3 -m pip install -r ${REPO}/requirements_test.txt
 bash ${REPO}/scripts/lint.sh
 bash ${REPO}/scripts/test.sh
 ```
+
+----
+
+## API
+
+### Many-to-Many relations
+
+DRF serializing is a little harder for many-to-many relations.
+
+To make it work:
+
+1. Initialize the choices for correct validation - example:
+
+  ```python3
+  class BaseAlertWriteRequest(serializers.ModelSerializer):
+      def __init__(self, *args, **kwargs):
+          super().__init__(*args, **kwargs)
+          self.fields['jobs'] = serializers.MultipleChoiceField(choices=[job.id for job in Job.objects.all()])
+  
+      jobs = serializers.MultipleChoiceField(allow_blank=True, choices=[])
+   ```
+
+2. The update of the FK has to be done manually - example:
+
+  ```python3
+  def update_jobs(alert: BaseAlert, job_ids: list):
+      jobs = []
+      for job_id in job_ids:
+          try:
+              jobs.append(Job.objects.get(id=job_id))
+    
+          except ObjectDoesNotExist:
+              continue
+    
+      alert.jobs.set(jobs)
+   
+   update_jobs(alert=alert, job_ids=serializer.validated_data.pop('jobs'))
+   AlertGlobal.objects.filter(id=alert.id).update(**serializer.validated_data)
+   ```
+
+----
+
+### Unique constraints
+
+DRF has some issues with validating UC's set at model level.
+
+To work around this - we can disable this validation:
+
+```python3
+class RepositoryWriteRequest(serializers.ModelSerializer):
+    class Meta:
+        model = Repository
+        fields = Repository.api_fields_write
+
+    name = serializers.CharField(validators=[])  # uc on update
+```

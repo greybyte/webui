@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from aw.utils.http import ui_endpoint_wrapper_kwargs
 from aw.model.permission import JobPermission, JobPermissionMapping, JobCredentialsPermissionMapping, \
     JobRepositoryPermissionMapping, JobPermissionMemberUser, JobPermissionMemberGroup
-from aw.model.alert import AlertUser, AlertPlugin, AlertGroup, AlertGlobal
+from aw.model.alert import AlertUser, AlertPlugin, AlertGroup, AlertGlobal, \
+    AlertUserJobMapping, AlertGroupJobMapping, AlertGlobalJobMapping
 from aw.config.form_metadata import FORM_LABEL, FORM_HELP
 from aw.views.base import choices_global_credentials, choices_job, choices_user, choices_group, choices_repositories
 
@@ -147,20 +148,21 @@ def setting_alert_user_edit(request, alert_id: int = None) -> HttpResponse:
     perm_form = SettingAlertUserForm()
     form_method = 'post'
     form_api = 'alert/user'
-    alert = {}
+    data = {}
 
     if alert_id is not None and alert_id != 0:
         alert = AlertUser.objects.filter(id=alert_id).first()
         if alert is None:
             return redirect(f"/ui/settings/alerts?error=Alert with ID {alert_id} does not exist")
 
-        alert = alert.__dict__
+        data = alert.__dict__
+        data['jobs'] = [link.job.id for link in AlertUserJobMapping.objects.filter(alert=alert)]
         form_method = 'put'
         form_api += f'/{alert_id}'
 
     perm_form_html = perm_form.render(
         template_name='forms/snippet.html',
-        context={'form': perm_form, 'existing': alert},
+        context={'form': perm_form, 'existing': data},
     )
     return render(
         request, status=200, template_name='settings/alert_edit.html',
@@ -199,20 +201,21 @@ def setting_alert_group_edit(request, alert_id: int = None) -> HttpResponse:
     perm_form = SettingAlertGroupForm()
     form_method = 'post'
     form_api = 'alert/group'
-    alert = {}
+    data = {}
 
     if alert_id is not None and alert_id != 0:
         alert = AlertGroup.objects.filter(id=alert_id).first()
         if alert is None:
             return redirect(f"/ui/settings/alerts?error=Alert with ID {alert_id} does not exist")
 
-        alert = alert.__dict__
+        data = alert.__dict__
+        data['jobs'] = [link.job.id for link in AlertGroupJobMapping.objects.filter(alert=alert)]
         form_method = 'put'
         form_api += f'/{alert_id}'
 
     perm_form_html = perm_form.render(
         template_name='forms/snippet.html',
-        context={'form': perm_form, 'existing': alert},
+        context={'form': perm_form, 'existing': data},
     )
     return render(
         request, status=200, template_name='settings/alert_edit.html',
@@ -246,20 +249,21 @@ def setting_alert_global_edit(request, alert_id: int = None) -> HttpResponse:
     perm_form = SettingAlertUserForm()
     form_method = 'post'
     form_api = 'alert/global'
-    alert = {}
+    data = {}
 
     if alert_id is not None and alert_id != 0:
         alert = AlertGlobal.objects.filter(id=alert_id).first()
         if alert is None:
             return redirect(f"/ui/settings/alerts?error=Alert with ID {alert_id} does not exist")
 
-        alert = alert.__dict__
+        data = alert.__dict__
+        data['jobs'] = [link.job.id for link in AlertGlobalJobMapping.objects.filter(alert=alert)]
         form_method = 'put'
         form_api += f'/{alert_id}'
 
     perm_form_html = perm_form.render(
         template_name='forms/snippet.html',
-        context={'form': perm_form, 'existing': alert},
+        context={'form': perm_form, 'existing': data},
     )
     return render(
         request, status=200, template_name='settings/alert_edit.html',
