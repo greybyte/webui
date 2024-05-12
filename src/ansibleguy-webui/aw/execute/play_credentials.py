@@ -71,12 +71,20 @@ def get_credentials_to_use(job: Job, execution: JobExecution) -> (BaseJobCredent
         credentials = job.credentials_default
 
     elif job.credentials_needed and is_set(execution.user):
-        # try to get default user-credentials as a last-resort if the job needs some credentials
-        try:
-            credentials = JobUserCredentials.objects.filter(user=execution.user).first()
+        # get user credentials that match the job credential-category
+        if is_set(job.credentials_category):
+            for user_creds in JobUserCredentials.objects.filter(user=execution.user):
+                if user_creds.category == job.credentials_category:
+                    credentials = user_creds
+                    break
 
-        except ObjectDoesNotExist:
-            pass
+        if credentials is None:
+            # try to get default user-credentials as a last-resort if the job needs some credentials
+            try:
+                credentials = JobUserCredentials.objects.filter(user=execution.user).first()
+
+            except ObjectDoesNotExist:
+                pass
 
     if job.credentials_needed and credentials is None:
         config_error(

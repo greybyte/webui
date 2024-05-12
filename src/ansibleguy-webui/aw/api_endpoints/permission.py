@@ -46,6 +46,7 @@ class PermissionWriteRequest(serializers.ModelSerializer):
     repositories = serializers.MultipleChoiceField(allow_blank=True, choices=[])
     users = serializers.MultipleChoiceField(allow_blank=True, choices=[])
     groups = serializers.MultipleChoiceField(allow_blank=True, choices=[])
+    name = serializers.CharField(validators=[])  # uc on update
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

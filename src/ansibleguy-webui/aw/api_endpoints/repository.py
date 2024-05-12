@@ -25,6 +25,8 @@ class RepositoryWriteRequest(serializers.ModelSerializer):
         model = Repository
         fields = Repository.api_fields_write
 
+    name = serializers.CharField(validators=[])  # uc on update
+
 
 class RepositoryReadResponse(RepositoryWriteRequest):
     class Meta:

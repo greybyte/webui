@@ -12,6 +12,7 @@ FORM_LABEL = {
             'tags_skip': 'Skip Tags',
             'credentials_needed': 'Needs Credentials',
             'credentials_default': 'Default Job Credentials',
+            'credentials_category': 'Credentials Category',
             'form': 'Execution Form',
         },
         'credentials': {
@@ -23,6 +24,7 @@ FORM_LABEL = {
             'vault_pass': 'Vault Password',
             'vault_id': 'Vault ID',
             'ssh_key': 'SSH Private Key',
+            'category': 'Category',
         },
         'repository': {
             'rtype': 'Repository Type',
@@ -133,6 +135,8 @@ FORM_HELP = {
                                   '(either as default or at execution-time; '
                                   'fallback are the user-credentials of the executing user)',
             'credentials_default': 'Specify job-level default credentials to use',
+            'credentials_category': 'The credential category can be used for dynamic matching of '
+                                    'user credentials at execution time',
             'enabled': 'En- or disable the schedule. Can be ignored if no schedule was set',
             'form': 'Select a Job-Execution form to display on ad-hoc executions',
         },
@@ -143,6 +147,7 @@ FORM_HELP = {
                         'vault_managing_passwords.html">'
                         'Ansible Docs - Managing Passwords</a>',
             'ssh_key': 'Provide an unencrypted SSH private key',
+            'category': 'The category of user credentials. Used for dynamic matching at execution time',
         },
         'repository': {
             'static_path': 'Path to the local static repository/playbook-base-directory',

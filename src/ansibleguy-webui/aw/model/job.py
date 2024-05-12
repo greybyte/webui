@@ -80,7 +80,7 @@ class Job(BaseJob):
     CHANGE_FIELDS = [
         'name', 'playbook_file', 'inventory_file', 'repository', 'schedule', 'enabled', 'limit', 'verbosity',
         'mode_diff', 'mode_check', 'tags', 'tags_skip', 'verbosity', 'comment', 'environment_vars', 'cmd_args',
-        'credentials_default', 'credentials_needed',
+        'credentials_default', 'credentials_needed', 'credentials_category',
     ]
     form_fields_primary = ['name', 'playbook_file', 'inventory_file', 'repository']
     form_fields = CHANGE_FIELDS
@@ -101,6 +101,7 @@ class Job(BaseJob):
     credentials_default = models.ForeignKey(
         JobGlobalCredentials, on_delete=models.SET_NULL, related_name='job_fk_creddflt', null=True, blank=True,
     )
+    credentials_category = models.CharField(max_length=100, **DEFAULT_NONE)
     repository = models.ForeignKey(Repository, on_delete=models.SET_NULL, related_name='job_fk_repo', **DEFAULT_NONE)
 
     def __str__(self) -> str:

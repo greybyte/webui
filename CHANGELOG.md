@@ -6,6 +6,10 @@
 
 * Enhanced graceful stop
 * Alerting
+  * E-Mail
+  * Plugin System
+* Credential categories
+* Fix for SSH-RSA key usage (*error in libcrypto*)
 
 ----
 

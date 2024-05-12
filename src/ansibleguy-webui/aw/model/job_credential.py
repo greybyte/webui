@@ -123,7 +123,7 @@ class BaseJobCredentials(BaseModel):
 
 class JobGlobalCredentials(BaseJobCredentials):
     api_fields_read = [
-        'id', 'name', 'become_user', 'connect_user', 'vault_file', 'vault_id'
+        'id', 'name', 'become_user', 'connect_user', 'vault_file', 'vault_id',
     ]
     api_fields_write = api_fields_read.copy()
     api_fields_write.extend(BaseJobCredentials.SECRET_ATTRS)
@@ -142,17 +142,14 @@ class JobGlobalCredentials(BaseJobCredentials):
 
 class JobUserCredentials(BaseJobCredentials):
     api_fields_read = JobGlobalCredentials.api_fields_read.copy()
-    api_fields_read.append('user')
+    api_fields_read.extend(['user', 'category'])
     api_fields_write = JobGlobalCredentials.api_fields_write.copy()
-    api_fields_write.append('user')
+    api_fields_write.extend(['user', 'category'])
     form_fields = JobGlobalCredentials.api_fields_write.copy()
+    form_fields.append('category')
 
     user = models.ForeignKey(USERS, on_delete=models.CASCADE)
+    category = models.CharField(max_length=100, **DEFAULT_NONE)
 
     def __str__(self) -> str:
         return f"Credentials '{self.name}' of user '{self.user.username}'{self._get_set_creds_str()}"
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'name'], name='jobusercreds_user_name')
-        ]

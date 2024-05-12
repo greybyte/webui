@@ -43,7 +43,11 @@ User Credentials
 
 User credential can only be used and accessed by the user that created them.
 
-Jobs that are executed by an user will use the first user-credentials found as a fallback in case no other credentials were provided/configured (*but the job is set to need credentials*)!
+Jobs that are executed by an user will use: (*if the job is set to need credentials*)
+
+* the user-credentials matching the jobs :code:`credential category`
+
+* or the first user-credentials found as a fallback in case no other credentials were provided/configured
 
 ----
 
