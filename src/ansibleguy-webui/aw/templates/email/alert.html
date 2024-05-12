@@ -1,0 +1,90 @@
+{% load util %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {
+                padding: 0 0;
+                margin: 0 0;
+                background-color: var(--bg) !important;
+                color: var(--tc1);
+                --bg: #fcfdff;
+                --tc1: #121212;
+            }
+            @media (prefers-color-scheme: dark) {
+                --bg: #121212;
+                --tc1: #fcfdff;
+            }
+            .aw-log-ok, .aw-stats-ok {
+                color: #11D116;
+            }
+            .aw-log-skip, .aw-stats-skipped, .aw-stats-ignored {
+                color: #1AB899;
+            }
+            .aw-log-warn, .aw-stats-rescued {
+                color: #8E44AD;
+            }
+            .aw-log-err, .aw-stats-unreachable, .aw-stats-failed {
+                color: #E11616;
+            }
+            .aw-log-change, .aw-stats-changed {
+                color: #F07201;
+            }
+            .aw-status {
+{% if execution.status_name == 'Failed' %}
+                color: #E11616;
+{% elif execution.status_name == 'Finished' %}
+                color: #11D116;
+{% endif %}
+            }
+        </style>
+    </head>
+    <body>
+        <h2><b>Job</b>: {{ execution.job.name }}</h2>
+        <b>Status</b>: <span class="aw-status">{{ execution.status_name }}</span><br><br>
+
+        <b>Executed by</b>: {{ execution.user_name }}<br>
+        <b>Start time</b>: {{ execution.time_created_str }}<br>
+{% if execution.result is not none %}
+        <b>Finish time</b>: {{ execution.result.time_fin_str }}<br>
+        <b>Duration</b>: {{ execution.result.time_duration_str }}<br>
+{%   if execution.result.error is not none %}
+        <b>Short error message</b>: '{{ execution.result.error.short }}'<br>
+        <b>Long error message</b>: '{{ execution.result.error.med }}'<br>
+{%   endif %}
+{%   if error_msgs|get_value:'html'|exists %}
+        <br>
+        <b>Execution errors</b>:<br>
+{%     for msg in error_msgs|get_value:'html' %}
+        {{ msg|safe }}<br>
+{%     endfor %}
+        <br>
+{%   endif %}
+{% endif %}
+{% for log_attr in execution.log_file_fields %}
+{%   set_var execution|get_value:log_attr as log_file %}
+{%   set_var log_attr|concat:'_url' as log_url %}
+{%   if log_file|file_exists %}
+        <b>{{ log_attr|whitespace_char:'_'|capitalize }}</b>: <a href="{{ web_addr }}{{ execution|get_value:log_url }}">Download</a><br>
+{%   endif %}
+{% endfor %}
+{% if stats|exists %}
+        <br><hr>
+        <h3><b>Statistics</b>:</h3>
+{%   for host, host_stats in stats.items %}
+        <b>Host</b>: {{ host }}<br>
+        <b>Stats</b>:
+{%     for k, v in host_stats.items %}
+{%       if v == 0 or v is false %}
+        {{ k }}: {{ v }}
+{%       else %}
+        <span class="aw-stats-{{ k|remove_char:'tasks_' }}">{{ k }}: {{ v }}</span>
+{%       endif %}
+{%       if not forloop.last %},
+{%       endif %}
+{%     endfor %}<br><br>
+{%   endfor %}
+{% endif %}
+    </body>
+</html>

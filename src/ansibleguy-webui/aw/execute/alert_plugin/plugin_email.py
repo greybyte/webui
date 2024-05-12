@@ -3,7 +3,8 @@ from pathlib import Path
 from smtplib import SMTP, SMTP_SSL, SMTPResponseException
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from json import dumps as json_dumps
+
+from django.template.loader import get_template
 
 from aw.base import USERS
 from aw.utils.util import valid_email
@@ -14,49 +15,19 @@ from aw.settings import get_main_web_address
 from aw.model.system import MAIL_TRANSPORT_TYPE_SSL, MAIL_TRANSPORT_TYPE_STARTTLS
 
 
-def _email_send(server: SMTP, user: USERS, stats: dict, execution: JobExecution):
+def _email_send(server: SMTP, user: USERS, stats: dict, execution: JobExecution, error_msgs: dict):
     server.login(user=config['mail_user'], password=config['mail_pass'])
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = f"Ansible WebUI Alert - Job '{execution.job.name}' - {execution.status_name}"
+    msg['Subject'] = f"Ansible WebUI - Job '{execution.job.name}' - {execution.status_name}"
     msg['From'] = config['mail_sender']
     msg['To'] = user.email
 
-    text = f"""
-Job: {execution.job.name}
-Status: {execution.status_name}
+    tmpl_ctx = {'execution': execution, 'stats': stats, 'web_addr': get_main_web_address(), 'error_msgs': error_msgs}
+    text_content = get_template('email/alert.txt').render(tmpl_ctx)
+    html_content = get_template('email/alert.html').render(tmpl_ctx)
 
-Executed by: {execution.user_name}
-Start time: {execution.time_created_str}
-"""
-
-    if execution.result is not None:
-        text += f"""
-Finish time: {execution.result.time_fin_str}
-Duration: {execution.result.time_duration_str}
-"""
-
-        if execution.result.error is not None:
-            text += f"""
-Short error message: '{execution.result.error.short}'
-Long error message: '{execution.result.error.med}'
-"""
-
-    for log_attr in JobExecution.log_file_fields:
-        file = getattr(execution, log_attr)
-        if Path(file).is_file():
-            text += f"""
-{log_attr.replace('_', ' ').capitalize()}: {get_main_web_address()}{getattr(execution, log_attr + '_url')}
-"""
-
-    if len(stats) > 0:
-        text += f"""
-
-Raw stats:
-{json_dumps(stats)}
-"""
-
-    msg.attach(MIMEText(text, 'plain'))
-    # msg.attach(MIMEText(html, 'html'))
+    msg.attach(MIMEText(text_content, 'plain'))
+    msg.attach(MIMEText(html_content, 'html'))
 
     server.sendmail(
         from_addr=config['mail_sender'],
@@ -65,7 +36,7 @@ Raw stats:
     )
 
 
-def alert_plugin_email(user: USERS, stats: dict, execution: JobExecution):
+def alert_plugin_email(user: USERS, stats: dict, execution: JobExecution, error_msgs: dict):
     if user.email.endswith('@localhost') or not valid_email(user.email):
         log(msg=f"User has an invalid email address configured: {user.username} ({user.email})", level=3)
         return
@@ -90,14 +61,16 @@ def alert_plugin_email(user: USERS, stats: dict, execution: JobExecution):
         if config['mail_transport'] == MAIL_TRANSPORT_TYPE_SSL:
             with SMTP_SSL(server, port, context=ssl_context) as server:
                 server.login(config['mail_user'], config['mail_pass'])
-                _email_send(server=server, user=user, stats=stats, execution=execution)
+                _email_send(server=server, user=user, stats=stats, execution=execution, error_msgs=error_msgs)
 
         else:
             with SMTP(server, port) as server:
                 if config['mail_transport'] == MAIL_TRANSPORT_TYPE_STARTTLS:
                     server.starttls(context=ssl_context)
 
-                _email_send(server=server, user=user, stats=stats, execution=execution)
+                _email_send(server=server, user=user, stats=stats, execution=execution, error_msgs=error_msgs)
+
+        log(msg=f"Sent alert email to: {user.username} ({user.email})", level=6)
 
     except (SMTPResponseException, OSError) as e:
         log(msg=f"Got error sending alert mail: {e}", level=2)

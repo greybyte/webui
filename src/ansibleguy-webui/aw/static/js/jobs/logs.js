@@ -1,36 +1,9 @@
-const colorMapping = {
-    '[0m': '</span>',
-    '[0;32m': '<span class="aw-log-ok">',
-    '[1;32m': '<span class="aw-log-ok">',
-    '[0;36m': '<span class="aw-log-skip">',
-    '[1;36m': '<span class="aw-log-skip">',
-    '[0;35m': '<span class="aw-log-warn">',
-    '[1;35m': '<span class="aw-log-warn">',
-    '[0;31m': '<span class="aw-log-err">',
-    '[1;31m': '<span class="aw-log-err">',
-    '[0;33m': '<span class="aw-log-change">',
-    '[1;33m': '<span class="aw-log-change">',
-}
-
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
 function replaceAll(str, search, replace) {
     return str.replace(new RegExp(escapeRegExp(search), 'g'), replace);
-}
-
-function replaceLineColors(rawLines) {
-    var fixedLines = [];
-
-    for (line of rawLines) {
-        for (let [search, replace] of Object.entries(colorMapping)) {
-            line = replaceAll(line, search, replace);
-        }
-        fixedLines.push(line);
-    }
-
-    return fixedLines
 }
 
 function addLogLines($this) {
@@ -47,7 +20,7 @@ function addLogLines($this) {
     if (!hidden) {
         $.get("/api/job/" + job_id + "/" + exec_id + "/log/" + logLineStart, function(data) {
           if (data.lines.length > 0) {
-            document.getElementById(logElement).innerHTML += replaceLineColors(data.lines).join('');
+            document.getElementById(logElement).innerHTML += data.lines.join('');
             $this.attr("aw-log-line", parseInt(logLineStart) + data.lines.length);
             logElementEnd.scrollIntoView({ behavior: "smooth", block: "end", inline: "end" });
           }

@@ -17,7 +17,10 @@ from aw.model.job import JobExecution
 from aw.model.alert import BaseAlert, AlertUser, AlertGroup
 
 
-def alert_plugin_wrapper(alert: BaseAlert, user: USERS, stats: dict, execution: JobExecution, failed: bool):
+def alert_plugin_wrapper(
+        alert: BaseAlert, user: USERS, stats: dict, execution: JobExecution, failed: bool,
+        error_msgs: dict,
+):
     if not Path(alert.plugin.executable).is_file():
         log(
             msg=f"Alert plugin has an invalid executable configured: {alert.name} ({alert.plugin.executable})",
@@ -55,6 +58,7 @@ def alert_plugin_wrapper(alert: BaseAlert, user: USERS, stats: dict, execution: 
             'error_short': None,
             'error_med': None,
         },
+        'errors': error_msgs,
         'stats': stats,
     }
 
@@ -75,7 +79,7 @@ def alert_plugin_wrapper(alert: BaseAlert, user: USERS, stats: dict, execution: 
     if execution.result is not None:
         data['execution']['time_fin'] = int(unix_timestamp(execution.result.time_fin_dt.timetuple()))
         data['execution']['time_fin_pretty'] = execution.result.time_fin_str
-        data['execution']['time_duration'] = execution.result.time_duration
+        data['execution']['time_duration'] = execution.result.time_duration.total_seconds()
         data['execution']['time_duration_pretty'] = execution.result.time_duration_str
 
         if execution.result.error is not None:
@@ -105,5 +109,7 @@ def alert_plugin_wrapper(alert: BaseAlert, user: USERS, stats: dict, execution: 
 
     if result['rc'] != 0:
         log(f"Alert plugin failed! Output: '{result['stdout']}' | Error: '{result['stderr']}'")
+
+    log(msg=f"Executed alert plugin '{alert.plugin.name}' targeting user: {user.username}", level=6)
 
     remove_file(tmp_file)

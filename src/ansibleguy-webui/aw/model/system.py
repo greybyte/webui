@@ -120,8 +120,8 @@ def get_schema_metadata() -> SchemaMetadata:
 
 class UserExtended(models.Model):
     user = models.OneToOneField(USERS, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=100)
-    description = models.CharField(max_length=1000)
+    phone = models.CharField(max_length=100, **DEFAULT_NONE)
+    description = models.CharField(max_length=1000, **DEFAULT_NONE)
 
     class Meta:
         constraints = [

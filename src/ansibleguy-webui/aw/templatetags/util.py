@@ -1,3 +1,4 @@
+from pathlib import Path
 from functools import cache
 
 from django import template
@@ -113,8 +114,23 @@ def whitespace_char(data: str, char: str) -> str:
 
 
 @register.filter
+def remove_char(data: str, char: str) -> str:
+    return data.replace(char, '')
+
+
+@register.filter
 def split(data: str, split_at: str) -> list:
     return data.split(split_at)
+
+
+@register.filter
+def concat(data: str, add: str) -> str:
+    return data + add
+
+
+@register.filter
+def file_exists(file: str) -> bool:
+    return Path(file).is_file()
 
 
 @register.filter

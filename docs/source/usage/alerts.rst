@@ -4,6 +4,8 @@
 
 .. include:: ../_include/warn_develop.rst
 
+.. |alert_email| image:: ../_static/img/alert_email.png
+   :class: wiki-img
 
 ======
 Alerts
@@ -37,6 +39,10 @@ You need to configure your mailserver at the :code:`System - Config` page.
 
 After that you can receive e-mails on job finish/failure.
 
+**Example Mail**:
+
+|alert_email|
+
 ----
 
 Plugins
@@ -64,8 +70,8 @@ There is a generic alert-plugin interface for custom solutions.
             "first_name": "",
             "last_name": "",
             "email": "ansible@localhost",
-            "phone": "",
-            "description": "",
+            "phone": null,
+            "description": null,
             "is_active": true,
             "last_login": 1715445321,
             "groups": []
@@ -79,8 +85,8 @@ There is a generic alert-plugin interface for custom solutions.
             "time_start_pretty": "2024-05-11 18:04:10 CEST",
             "time_fin": 1715450651,
             "time_fin_pretty": "2024-05-11 18:04:11 CEST",
-            "time_duration" 2,
-            "time_duration_pretty" "2s",
+            "time_duration": 1.036579,
+            "time_duration_pretty": "2s",
             "error_short": null,
             "error_med": null,
             "log_stdout": "/home/guy/.local/share/ansible-webui/test2_2024-05-11_18-04-10_ansible_stdout.log",
@@ -92,7 +98,17 @@ There is a generic alert-plugin interface for custom solutions.
             "log_stderr_repo": null,
             "log_stderr_repo_url": null
           },
-          "stats": {}
+          "stats": {
+            "localhost": {
+              "unreachable": false,
+              "tasks_skipped": 3,
+              "tasks_ok": 1,
+              "tasks_failed": 0,
+              "tasks_rescued": 0,
+              "tasks_ignored": 0,
+              "tasks_changed": 0
+            }
+          }
         }
 
 * Create a plugin at :code:`Settings - Alerts` that points to your executable
@@ -100,3 +116,32 @@ There is a generic alert-plugin interface for custom solutions.
 * Link the plugin in alerts
 
 * Test it
+
+----
+
+Example Plugin
+--------------
+
+    .. code-block:: python3
+
+        #!/usr/bin/env python3
+
+        from sys import argv
+        from sys import exit as sys_exit
+        from json import loads as json_loads
+
+        with open(argv[1], 'r', encoding='utf-8') as _f:
+            data = json_loads(_f.read())
+
+        # implement alerting
+
+        if data['execution']['failed']:
+            # failure action
+
+            for host, stats in data['stats'].items():
+                if stats['unreachable'] or stats['tasks_failed'] > 0:
+                    # hosts that failed
+                    pass
+
+        sys_exit(0)
+

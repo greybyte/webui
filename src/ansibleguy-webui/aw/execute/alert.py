@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from django.db.models import Q
 
 from aw.base import USERS
+from aw.utils.util import ansible_log_text, ansible_log_html
 from aw.model.base import JOB_EXEC_STATUS_SUCCESS
 from aw.model.job import Job, JobExecution, JobExecutionResultHost
 from aw.utils.permission import has_job_permission, CHOICE_PERMISSION_READ
@@ -22,11 +25,24 @@ class Alert:
                 self.privileged_users.append(user)
 
         self.stats = {}
-        if execution.result is None:
+        if execution.result is not None:
             for stats in JobExecutionResultHost.objects.filter(result=execution.result):
-                self.stats[stats['hostname']] = {
+                self.stats[stats.hostname] = {
                       attr: getattr(stats, attr) for attr in JobExecutionResultHost.STATS
                 }
+
+        self.error_msgs = {'html': [], 'text': []}
+        self._get_task_errors()
+
+    def _get_task_errors(self):
+        if self.failed and Path(self.execution.log_stdout).is_file():
+            with open(self.execution.log_stdout, 'r', encoding='utf-8') as _f:
+                for line in _f.readlines():
+                    line_text = ansible_log_text(line)
+                    line_html = ansible_log_html(line)
+                    if line_text.startswith('fatal: '):
+                        self.error_msgs['html'].append(line_html)
+                        self.error_msgs['text'].append(line_text)
 
     def _job_filter(self, model: type):
         return model.objects.filter(Q(jobs=self.job) | Q(jobs_all=True))
@@ -49,10 +65,16 @@ class Alert:
                 stats=self.stats,
                 execution=self.execution,
                 failed=self.failed,
+                error_msgs=self.error_msgs,
             )
 
         else:
-            alert_plugin_email(user=user, stats=self.stats, execution=self.execution)
+            alert_plugin_email(
+                user=user,
+                stats=self.stats,
+                execution=self.execution,
+                error_msgs=self.error_msgs,
+            )
 
     def _global(self):
         for alert in self._condition_filter(self._job_filter(AlertGlobal)):

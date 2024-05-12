@@ -128,6 +128,21 @@ CSRF Failed
 
 ----
 
+SSH Shared connection
+=====================
+
+**Error**: While executing Ansible you see: :code:`Shared connection to <IP> closed`
+
+**Problem**:
+
+* This seems to be an issue of how Ansible calls SSH. Have seen it happen on a few systems - even with using vanilla Ansible via CLI.
+
+  The issue is that a :code:`mux` process has not terminated gracefully.
+
+  Search for the process: :code:`ps -aux | grep mux` and kill it `kill -9 <PID>` (*the PID is the number in the second column*)
+
+----
+
 .. _usage_troubleshooting_saml:
 
 SAML Issues
@@ -241,7 +256,7 @@ Too Many Log Files exist
 
     MAX_LOG_AGE=7  # days
     cd ~/.local/share/ansible-webui/
-    find -type f -mtime +${MAX_LOG_AGE} -delete
+    find -type f -mtime +${MAX_LOG_AGE} -name "*.log" -delete
 
 ----
 

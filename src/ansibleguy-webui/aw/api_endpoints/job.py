@@ -17,7 +17,7 @@ from aw.api_endpoints.job_util import get_viewable_jobs_serialized, JobReadRespo
 from aw.utils.permission import has_job_permission, has_credentials_permission, has_manager_privileges
 from aw.execute.queue import queue_add
 from aw.execute.util import update_status, is_execution_status
-from aw.utils.util import is_set
+from aw.utils.util import is_set, ansible_log_html, ansible_log_text
 from aw.base import USERS
 
 
@@ -355,11 +355,25 @@ class APIJobExecutionLogs(APIView):
             403: OpenApiResponse(JobExecutionLogReadResponse, description='Not privileged to view the job logs'),
             404: OpenApiResponse(JobExecutionLogReadResponse, description='Job, execution or log-file do not exist'),
         },
+        parameters=[
+            OpenApiParameter(
+                name='format', type=str, default='html',
+                description="Format to return - one of 'plain', 'text' or 'html'",
+                required=False,
+            ),
+        ],
         summary='Get logs of a job execution.',
         operation_id='job_exec_logs'
     )
     def get(self, request, job_id: int, exec_id: int, line_start: int = 0):
         user = get_api_user(request)
+
+        if 'format' not in request.GET:
+            log_fmt = 'html'
+
+        else:
+            log_fmt = str(request.GET['format'])
+
         try:
             job, execution = _find_job_and_execution(job_id, exec_id)
 
@@ -372,6 +386,12 @@ class APIJobExecutionLogs(APIView):
 
                 with open(execution.log_stdout, 'r', encoding='utf-8') as logfile:
                     lines = logfile.readlines()
+                    if log_fmt == 'html':
+                        lines = [ansible_log_html(line) for line in lines]
+
+                    elif log_fmt == 'text':
+                        lines = [ansible_log_text(line) for line in lines]
+
                     return Response(data={'lines': lines[line_start:]}, status=200)
 
         except (ObjectDoesNotExist, FileNotFoundError):

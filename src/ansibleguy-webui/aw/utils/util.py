@@ -5,8 +5,9 @@ from os import open as open_file
 from pathlib import Path
 from functools import lru_cache, wraps
 from math import ceil
-from re import compile as regex_compile
-from re import IGNORECASE
+import re as regex
+from sys import maxunicode
+import unicodedata
 
 from pkg_resources import get_distribution
 from crontab import CronTab
@@ -150,23 +151,23 @@ def pretty_timedelta_str(sec: (int, float)) -> str:
     return f'{sec}s'
 
 # source: https://validators.readthedocs.io/en/latest/_modules/validators/email.html
-EMAIL_REGEX_USER = regex_compile(
+EMAIL_REGEX_USER = regex.compile(
     # dot-atom
     r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+"
     r"(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*$"
     # quoted-string
     r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|'
     r"""\\[\001-\011\013\014\016-\177])*"$)""",
-    IGNORECASE
+    regex.IGNORECASE
 )
-EMAIL_REGEX_DOMAIN = regex_compile(
+EMAIL_REGEX_DOMAIN = regex.compile(
     # domain
     r'(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
     r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?$)'
     # literal form, ipv4 address (SMTP 4.1.3)
     r'|^\[(25[0-5]|2[0-4]\d|[0-1]?\d?\d)'
     r'(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}\]$',
-    IGNORECASE
+    regex.IGNORECASE
 )
 
 
@@ -189,3 +190,42 @@ def valid_email(email: str) -> bool:
             return False
 
     return True
+
+
+def ansible_log_text(line: str) -> str:
+    # see: https://medium.com/analytics-vidhya/data-cleaning-for-textual-data-256b4bbffd
+    clean = regex.sub(r'[^\x00-\x7F]+', '', line)
+
+    all_chars = (chr(i) for i in range(maxunicode))
+    control_chars = ''.join(c for c in all_chars if unicodedata.category(c) == 'Cc')
+    control_char_re = regex.compile(f'[{regex.escape(control_chars)}]')
+    clean = control_char_re.sub('', clean)
+
+    clean = clean.replace("\t", "").replace("\r", "").replace("\n", "")
+    clean = regex.sub(r'\s{2,}', '', clean)
+
+    clean = regex.sub(r'["><]', '', clean)
+    clean = regex.sub(r'\[\d(|;\d|;\d\d)m', '', clean)
+    return clean
+
+
+ANSIBLE_LOG_COLOR_MAP = {
+    '\x1B[0m': '</span>',
+    '\x1B[0;32m': '<span class="aw-log-ok">',
+    '\x1B[1;32m': '<span class="aw-log-ok">',
+    '\x1B[0;36m': '<span class="aw-log-skip">',
+    '\x1B[1;36m': '<span class="aw-log-skip">',
+    '\x1B[0;35m': '<span class="aw-log-warn">',
+    '\x1B[1;35m': '<span class="aw-log-warn">',
+    '\x1B[0;31m': '<span class="aw-log-err">',
+    '\x1B[1;31m': '<span class="aw-log-err">',
+    '\x1B[0;33m': '<span class="aw-log-change">',
+    '\x1B[1;33m': '<span class="aw-log-change">',
+}
+
+
+def ansible_log_html(line: str) -> str:
+    for color_code, color_html in ANSIBLE_LOG_COLOR_MAP.items():
+        line = line.replace(color_code, color_html)
+
+    return line
