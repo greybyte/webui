@@ -22,20 +22,31 @@ class SystemConfigForm(forms.ModelForm):
         labels = FORM_LABEL['system']['config']
         help_texts = FORM_HELP['system']['config']
 
-    path_run = forms.CharField(max_length=500, initial=CONFIG_DEFAULTS['path_run'], required=True)
-    path_play = forms.CharField(max_length=500, initial=CONFIG_DEFAULTS['path_play'], required=True)
-    path_log = forms.CharField(max_length=500, initial=CONFIG_DEFAULTS['path_log'], required=True)
+    path_run = forms.CharField(
+        max_length=500, initial=CONFIG_DEFAULTS['path_run'], required=True,
+        label=Meta.labels['path_run'],
+    )
+    path_play = forms.CharField(
+        max_length=500, initial=CONFIG_DEFAULTS['path_play'], required=True,
+        label=Meta.labels['path_play'],
+    )
+    path_log = forms.CharField(
+        max_length=500, initial=CONFIG_DEFAULTS['path_log'], required=True,
+        label=Meta.labels['path_log'],
+    )
     path_ansible_config = forms.CharField(
         max_length=500, initial=CONFIG_DEFAULTS['path_ansible_config'], required=False,
+        label=Meta.labels['path_ansible_config'],
     )
     path_ssh_known_hosts = forms.CharField(
         max_length=500, initial=CONFIG_DEFAULTS['path_ssh_known_hosts'], required=False,
+        label=Meta.labels['path_ssh_known_hosts'],
     )
     timezone = forms.ChoiceField(
         required=False,
         widget=forms.Select,
         choices=[(tz, tz) for tz in sorted(all_timezones)],
-        label=FORM_LABEL['system']['config']['timezone'],
+        label=Meta.labels['timezone'],
     )
     debug = forms.ChoiceField(
         initial=CONFIG_DEFAULTS['debug'] or deployment_dev(), choices=CHOICES_BOOL,

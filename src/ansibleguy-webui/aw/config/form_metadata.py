@@ -73,6 +73,7 @@ FORM_LABEL = {
             'path_run': 'Runtime directory',
             'path_play': 'Playbook base-directory',
             'path_log': 'Directory for execution-logs',
+            'path_template': 'Directory for templates',
             'run_timeout': 'Timeout for playbook execution',
             'session_timeout': 'Timeout for WebUI login-sessions',
             'path_ansible_config': 'Ansible Config-File',
@@ -200,6 +201,7 @@ FORM_HELP = {
             'path_play': 'Path to the <a href="https://docs.ansible.com/ansible/2.8/user_guide/'
                          'playbooks_best_practices.html#directory-layout">Ansible base/playbook directory</a>',
             'path_log': 'Define the path where full job-logs are saved',
+            'path_template': 'Define the path where custom templates are placed',
             'path_ansible_config': 'Path to a <a href="https://docs.ansible.com/ansible/latest/installation_guide'
                                    '/intro_configuration.html#configuration-file">Ansible config-file</a> to use',
             'path_ssh_known_hosts': 'Path to a <a href="https://en.wikibooks.org/wiki/OpenSSH/'

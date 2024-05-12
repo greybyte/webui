@@ -7,7 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from django.template.loader import get_template
 
 from aw.base import USERS
-from aw.utils.util import valid_email
+from aw.utils.util import valid_email, is_set
 from aw.utils.debug import log
 from aw.config.main import config
 from aw.model.job import JobExecution
@@ -22,9 +22,20 @@ def _email_send(server: SMTP, user: USERS, stats: dict, execution: JobExecution,
     msg['From'] = config['mail_sender']
     msg['To'] = user.email
 
+    tmpl_html, tmpl_text = 'email/alert.html', 'email/alert.txt'
+    if is_set(config['path_template']):
+        _tmpl_base = Path(config['path_template'])
+        _tmpl_html = _tmpl_base / 'alert.html'
+        _tmpl_text = _tmpl_base / 'alert.txt'
+        if _tmpl_html.is_file():
+            tmpl_html = str(_tmpl_html)
+
+        if _tmpl_text.is_file():
+            tmpl_text = str(_tmpl_text)
+
     tmpl_ctx = {'execution': execution, 'stats': stats, 'web_addr': get_main_web_address(), 'error_msgs': error_msgs}
-    text_content = get_template('email/alert.txt').render(tmpl_ctx)
-    html_content = get_template('email/alert.html').render(tmpl_ctx)
+    text_content = get_template(tmpl_text).render(tmpl_ctx)
+    html_content = get_template(tmpl_html).render(tmpl_ctx)
 
     msg.attach(MIMEText(text_content, 'plain'))
     msg.attach(MIMEText(html_content, 'html'))

@@ -41,6 +41,7 @@ CONFIG_DEFAULTS = {
     'path_run': '/tmp/ansible-webui',
     'path_play': getcwd(),
     'path_log': f"{environ['HOME']}/.local/share/ansible-webui",
+    'path_template': None,  # only for custom overrides
     'db': f"{environ['HOME']}/.config/ansible-webui",
     'timezone': datetime.now().astimezone().tzname(),
     'secret': ''.join(random_choice(ascii_letters + digits + punctuation) for _ in range(50)),

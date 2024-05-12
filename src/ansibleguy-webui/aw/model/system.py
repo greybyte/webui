@@ -24,8 +24,8 @@ MAIL_TRANSPORT_TYPE_CHOICES = [
 class SystemConfig(BaseModel):
     SECRET_ATTRS = ['mail_pass']
     api_fields_read = [
-        'path_run', 'path_play', 'path_log', 'timezone', 'run_timeout', 'session_timeout', 'path_ansible_config',
-        'path_ssh_known_hosts', 'debug', 'logo_url', 'ara_server', 'global_environment_vars',
+        'path_run', 'path_play', 'path_log', 'path_template', 'timezone', 'run_timeout', 'session_timeout',
+        'path_ansible_config', 'path_ssh_known_hosts', 'debug', 'logo_url', 'ara_server', 'global_environment_vars',
         'mail_server', 'mail_transport', 'mail_ssl_verify', 'mail_sender', 'mail_user',
     ]
 
@@ -38,6 +38,7 @@ class SystemConfig(BaseModel):
     path_run = models.CharField(max_length=500, default='/tmp/ansible-webui')
     path_play = models.CharField(max_length=500, default=None)
     path_log = models.CharField(max_length=500, default=None)
+    path_template = models.CharField(max_length=500, **DEFAULT_NONE)
     timezone = models.CharField(max_length=300, default='UTC')  # UTC to keep model migrations static
     run_timeout = models.PositiveIntegerField(default=CONFIG_DEFAULTS['run_timeout'])
     session_timeout = models.PositiveIntegerField(default=CONFIG_DEFAULTS['session_timeout'])
