@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 from django.template.loader import get_template
+from premailer import transform as html_transform_styles
 
 from aw.base import USERS
 from aw.utils.util import valid_email, is_set
@@ -36,6 +37,7 @@ def _email_send(server: SMTP, user: USERS, stats: dict, execution: JobExecution,
     tmpl_ctx = {'execution': execution, 'stats': stats, 'web_addr': get_main_web_address(), 'error_msgs': error_msgs}
     text_content = get_template(tmpl_text).render(tmpl_ctx)
     html_content = get_template(tmpl_html).render(tmpl_ctx)
+    html_content = html_transform_styles(html=html_content, pretty_print=True, allow_network=False)
 
     msg.attach(MIMEText(text_content, 'plain'))
     msg.attach(MIMEText(html_content, 'html'))

@@ -26,3 +26,6 @@ ansible-runner
 
 # config
 PyYAML
+
+# email
+premailer

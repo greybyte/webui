@@ -37,7 +37,7 @@ After that you can receive e-mails on job finish/failure.
 
 |alert_email|
 
-You can modify the email templates by setting the :code:`Template Directory` in your system config. If you want to do so - copy `the existing templates <https://github.com/ansibleguy/webui/tree/latest/src/ansibleguy-webui/aw/templates/email>`_ and modify them as needed. Note: the `Django template syntax <https://docs.djangoproject.com/en/5.0/ref/templates/language/>`_ is required.
+You can modify the email templates by setting the :code:`Template Directory` in your system config. If you want to do so - copy `the existing templates <https://github.com/ansibleguy/webui/tree/latest/src/ansibleguy-webui/aw/templates/email>`_ and modify them as needed. Note: the `Django template syntax <https://docs.djangoproject.com/en/5.0/ref/templates/language/>`_ is required. No external css is supported.
 
 ----
 
