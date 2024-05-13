@@ -17,14 +17,16 @@ from aw.model.system import MAIL_TRANSPORT_TYPE_SSL, MAIL_TRANSPORT_TYPE_STARTTL
 
 
 def _email_send(server: SMTP, user: USERS, stats: dict, execution: JobExecution, error_msgs: dict):
-    server.login(user=config['mail_user'], password=config['mail_pass'])
+    if is_set(config['mail_pass']):
+        server.login(user=config['mail_user'], password=config['mail_pass'])
+
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f"Ansible WebUI - Job '{execution.job.name}' - {execution.status_name}"
-    msg['From'] = config['mail_sender']
+    msg['From'] = config['mail_sender'] if is_set(config['mail_sender']) else config['mail_user']
     msg['To'] = user.email
 
     tmpl_html, tmpl_text = 'email/alert.html', 'email/alert.txt'
-    if is_set(config['path_template']):
+    if is_set(config['path_template']):  # custom templates
         _tmpl_base = Path(config['path_template'])
         _tmpl_html = _tmpl_base / 'alert.html'
         _tmpl_text = _tmpl_base / 'alert.txt'
