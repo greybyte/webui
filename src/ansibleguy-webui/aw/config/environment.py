@@ -5,7 +5,9 @@ from aw.config.defaults import CONFIG_DEFAULTS
 from aw.config.hardcoded import ENV_KEY_CONFIG, ENV_KEY_SAML
 
 AW_ENV_VARS = {
+    'hostnames': ['AW_HOSTNAMES'],
     'port': ['AW_PORT'],
+    'proxy': ['AW_PROXY'],
     'address': ['AW_LISTEN', 'AW_LISTEN_ADDRESS'],
     'timezone': ['AW_TIMEZONE'],
     'secret': ['AW_SECRET'],

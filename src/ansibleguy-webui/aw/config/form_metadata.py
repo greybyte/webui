@@ -82,6 +82,8 @@ FORM_LABEL = {
             # env-vars
             'timezone': 'Timezone',
             'db': 'Database',
+            'hostnames': 'Hostnames',
+            'proxy': 'Using Proxy',
             'db_migrate': 'Database auto-upgrade',
             'serve_static': 'Serving static files',
             'deployment': 'Deployment',
@@ -224,7 +226,7 @@ FORM_HELP = {
             'mail_ssl_verify': 'En- or disable SSL certificate verification. '
                                'If enabled - the certificate SAN has to contain the mail-server FQDN '
                                'and must be issued from a trusted CA',
-            'mail_sender': 'Mail Sender Address to use for Alert Mails',
+            'mail_sender': 'Mail Sender Address to use for Alert Mails. Fallback is mail-user',
             'mail_transport': 'The default port mapping is: 25 = Unencrypted, 465 = SSL, 587 = StartTLS',
         }
     }
