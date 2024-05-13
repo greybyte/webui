@@ -33,7 +33,7 @@ version = {file = ["VERSION"]}
 where = ["src"]
 
 [tool.setuptools.package-data]
-"*" = ["*.html", "*.js", "*.css", "*.svg"]
+"*" = ["*.html", "*.js", "*.css", "*.svg", "*.txt"]
 
 # [project.scripts]
 # ansibleguy-webui = "ansibleguy-webui.__main__"
