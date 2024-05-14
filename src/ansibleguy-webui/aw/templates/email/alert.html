@@ -3,6 +3,8 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="color-scheme" content="light dark">
+        <meta name="supported-color-schemes" content="light dark">
         <style>
             body {
                 padding: 0 0;
@@ -11,32 +13,44 @@
                 color: #121212;
             }
             .aw-log-ok, .aw-stats-ok {
-                color: #11D116;
+                color: #22bb33;
             }
             .aw-log-skip, .aw-stats-skipped, .aw-stats-ignored {
-                color: #1AB899;
+                color: #40a6ce;
             }
             .aw-log-warn, .aw-stats-rescued {
-                color: #8E44AD;
+                color: #7b3ed2;
             }
             .aw-log-err, .aw-stats-unreachable, .aw-stats-failed {
-                color: #E11616;
+                color: #bb2124;
             }
             .aw-log-change, .aw-stats-changed {
-                color: #F07201;
+                color: #f0ad4e;
             }
             .aw-status {
 {% if execution.status_name == 'Failed' %}
-                color: #E11616;
+                color: #bb2124;
 {% elif execution.status_name == 'Finished' %}
-                color: #11D116;
+                color: #22bb33;
 {% endif %}
+            }
+            a {
+                color: #0000EE;
+            }
+            @media (prefers-color-scheme: dark ) {
+                body {
+                    background-color: #121212;
+                    color: #fcfdff;
+                }
+                a {
+                    color: #66B2F5;
+                }
             }
         </style>
     </head>
     <body>
         <h2><b>Job</b>: {{ execution.job.name }}</h2>
-        <b>Status</b>: <span class="aw-status">{{ execution.status_name }}</span><br><br>
+        <b>Status</b>: <b><span class="aw-status">{{ execution.status_name }}</span></b><br><br>
 
         <b>Executed by</b>: {{ execution.user_name }}<br>
         <b>Start time</b>: {{ execution.time_created_str }}<br>
@@ -70,12 +84,14 @@
         <b>Host</b>: {{ host }}<br>
         <b>Stats</b>:
 {%     for k, v in host_stats.items %}
-{%       if v == 0 or v is false %}
-        {{ k }}: {{ v }}
-{%       else %}
+{%       if k == 'unreachable' or v != 0 %}
+{%         if not forloop.first %}|
+{%         endif %}
+{%         if k == 'unreachable' and v == 0 %}
+       {{ k }}: {{ v }}
+{%         else %}
         <span class="aw-stats-{{ k|remove_char:'tasks_' }}">{{ k }}: {{ v }}</span>
-{%       endif %}
-{%       if not forloop.last %},
+{%         endif %}
 {%       endif %}
 {%     endfor %}<br><br>
 {%   endfor %}
