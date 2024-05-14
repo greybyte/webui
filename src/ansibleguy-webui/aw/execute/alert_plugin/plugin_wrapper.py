@@ -28,6 +28,8 @@ def alert_plugin_wrapper(
         )
         return
 
+    url = get_main_web_address()
+
     data = {
         'alert': {
             'type': 'global',
@@ -48,6 +50,8 @@ def alert_plugin_wrapper(
             'failed': failed,
             'status': execution.status_name,
             'job_name': execution.job.name,
+            'job_id': execution.job.id,
+            'execution_id': execution.id,
             'user_name': execution.user_name,
             'time_start': int(unix_timestamp(execution.time_created_dt.timetuple())),
             'time_start_pretty': execution.time_created_str,
@@ -57,6 +61,7 @@ def alert_plugin_wrapper(
             'time_duration_pretty': None,
             'error_short': None,
             'error_med': None,
+            'log_url': f"{url}/ui/jobs/log?job={execution.job.id}",
         },
         'errors': error_msgs,
         'stats': stats,
@@ -91,7 +96,7 @@ def alert_plugin_wrapper(
         file = getattr(execution, log_attr)
         if Path(file).is_file():
             data['execution'][log_attr] = file
-            data['execution'][url_attr] = f"{get_main_web_address()}{getattr(execution, url_attr)}"
+            data['execution'][url_attr] = f"{url}{getattr(execution, url_attr)}"
 
         else:
             data['execution'][log_attr] = None

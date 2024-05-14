@@ -36,7 +36,7 @@ def _email_send(server: SMTP, user: USERS, stats: dict, execution: JobExecution,
         if _tmpl_text.is_file():
             tmpl_text = str(_tmpl_text)
 
-    tmpl_ctx = {'execution': execution, 'stats': stats, 'web_addr': get_main_web_address(), 'error_msgs': error_msgs}
+    tmpl_ctx = {'execution': execution, 'stats': stats, 'url': get_main_web_address(), 'error_msgs': error_msgs}
     text_content = get_template(tmpl_text).render(tmpl_ctx)
     html_content = get_template(tmpl_html).render(tmpl_ctx)
     html_content = html_transform_styles(html=html_content, pretty_print=True, allow_network=False)
