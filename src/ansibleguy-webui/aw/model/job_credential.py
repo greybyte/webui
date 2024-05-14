@@ -20,6 +20,9 @@ class BaseJobCredentials(BaseModel):
         'vault_file': '--vault-password-file',
         'vault_id': '--vault-id',
     }
+    EMPTY_ATTRS = [
+        'connect_user', 'vault_file', 'vault_id', 'vault_pass', 'become_pass', 'connect_pass', 'ssh_key',
+    ]
 
     name = models.CharField(max_length=100, null=False, blank=False)
     connect_user = models.CharField(max_length=100, **DEFAULT_NONE)

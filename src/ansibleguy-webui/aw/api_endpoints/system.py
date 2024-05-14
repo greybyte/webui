@@ -104,10 +104,10 @@ class APISystemConfig(APIView):
             changed = False
             for setting, value in serializer.validated_data.items():
                 if setting in SystemConfig.SECRET_ATTRS:
-                    if is_null(value) or value == SECRET_HIDDEN:
+                    if (setting not in SystemConfig.EMPTY_ATTRS and is_null(value)) or value == SECRET_HIDDEN:
                         value = getattr(config_db, setting)
 
-                if is_set(value) and str(config[setting]) != str(value):
+                if (setting in SystemConfig.EMPTY_ATTRS or is_set(value)) and str(config[setting]) != str(value):
                     setattr(config_db, setting, value)
                     changed = True
 

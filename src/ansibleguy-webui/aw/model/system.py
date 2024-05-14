@@ -23,6 +23,10 @@ MAIL_TRANSPORT_TYPE_CHOICES = [
 # NOTE: add default-values to config.defaults.CONFIG_DEFAULTS
 class SystemConfig(BaseModel):
     SECRET_ATTRS = ['mail_pass']
+    EMPTY_ATTRS = [
+        'path_ansible_config', 'path_ssh_known_hosts', 'logo_url', 'ara_server', 'global_environment_vars',
+        'mail_server', 'mail_sender', 'mail_user', 'mail_pass',
+    ]
     api_fields_read = [
         'path_run', 'path_play', 'path_log', 'path_template', 'timezone', 'run_timeout', 'session_timeout',
         'path_ansible_config', 'path_ssh_known_hosts', 'debug', 'logo_url', 'ara_server', 'global_environment_vars',

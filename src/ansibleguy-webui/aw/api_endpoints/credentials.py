@@ -368,7 +368,7 @@ class APIJobCredentialsItem(APIView):
             # not working with password properties: 'Job.objects.filter(id=job_id).update(**serializer.data)'
             for field, value in serializer.validated_data.items():
                 if field in BaseJobCredentials.SECRET_ATTRS:
-                    if is_null(value) or value == SECRET_HIDDEN:
+                    if (field not in BaseJobCredentials.EMPTY_ATTRS and is_null(value)) or value == SECRET_HIDDEN:
                         value = getattr(credentials, field)
 
                     elif field == 'ssh_key':

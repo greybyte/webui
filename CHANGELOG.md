@@ -2,6 +2,18 @@
 
 ## Version 0
 
+### 0.0.21
+
+* ...
+
+----
+
+### 0.0.20
+
+* Fixes for Alert Mails
+
+----
+
 ### 0.0.19
 
 * Enhanced graceful stop

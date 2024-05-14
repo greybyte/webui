@@ -75,7 +75,6 @@ def alert_plugin_email(user: USERS, stats: dict, execution: JobExecution, error_
 
         if config['mail_transport'] == MAIL_TRANSPORT_TYPE_SSL:
             with SMTP_SSL(server, port, context=ssl_context) as server:
-                server.login(config['mail_user'], config['mail_pass'])
                 _email_send(server=server, user=user, stats=stats, execution=execution, error_msgs=error_msgs)
 
         else:
