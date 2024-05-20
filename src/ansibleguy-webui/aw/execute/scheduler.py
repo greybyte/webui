@@ -85,14 +85,16 @@ class Scheduler:
     def check(self):
         log('Checking for queued jobs', level=7)
         while True:
-            queue_item = queue_get()
-            if queue_item is None:
+            execution = queue_get()
+            if execution is None:
                 break
 
-            job, user = queue_item
-
-            log(f"Adding job-thread for queued job: '{job.name}' (triggered by user '{user.username}')", level=4)
-            self._add_thread(job=job, execution=JobExecution(user=user, job=job, comment='Triggered'), once=True)
+            log(
+                f"Adding job-thread for queued job: '{execution.job.name}' "
+                f"(triggered by user '{execution.user.username}')",
+                level=4,
+            )
+            self._add_thread(job=execution.job, execution=execution, once=True)
 
     def reload(self, signum=None):
         if not self.reloading and not self.stopping:

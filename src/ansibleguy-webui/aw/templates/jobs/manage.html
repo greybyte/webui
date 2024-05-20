@@ -37,25 +37,48 @@
         </tr>
         <tr id="aw-api-data-tmpl-row2" hidden="hidden">
             <td colspan="100%">
-                <h2><b>Last executions</b></h2><br>
-                ${EXECS}
-                <div>
-                    <button type="submit" title="Collapse" class="btn btn-info aw-btn-action aw-btn-collapse" aw-collapse="aw-spoiler-${ID}">
-                        {% include "../button/icon/collapse.html" %}
+                <form class="aw-exec-form" id="aw-job-exec-${ID}">
+                    <br>
+                    <input type="hidden" name="job_id" value="${ID}">
+                    <button type="submit" class="btn btn-primary" title="Execute Job">
+                        {% include "../button/icon/run.html" %}
                     </button>
-                </div>
+                </form>
             </td>
         </tr>
     </table>
+    <div id="aw-api-data-tmpl-exec-text" hidden="hidden">
+        <div class="mb-3 row">
+            <label for="id_${FIELD}" class="form-label col-sm-2 col-form-label">${PRETTY}</label>
+            <div class="col-sm-10"><input class="form-control" id="id_${FIELD}" name="${FIELD}" ${ATTRS}></div>
+        </div>
+    </div>
+    <div id="aw-api-data-tmpl-exec-bool" hidden="hidden">
+        <div class="mb-3 row">
+            <label for="id_${FIELD}" class="form-label col-sm-2 col-form-label">${PRETTY}</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="id_${FIELD}" name="${FIELD}">
+                    <option value="True">Yes</option>
+                    <option value="False" selected="">No</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="aw-api-data-tmpl-exec-verbosity" hidden="hidden">
+        <div class="mb-3 row">
+            <label for="id_verbosity" class="form-label col-sm-2 col-form-label">Verbosity</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="id_verbosity" name="verbosity"><option value="0" selected="">Default</option><option value="1">v</option><option value="2">vv</option><option value="3">vvv</option><option value="4">vvvv</option><option value="5">vvvv</option><option value="6">vvvvvv</option></select>
+            </div>
+        </div>
+    </div>
     <div id="aw-api-data-tmpl-actions" hidden="hidden">
         <button class="btn btn-primary aw-btn-action aw-api-click" title="Quick Execution" aw-api-endpoint="job" aw-api-item="${ID}" aw-api-method="post">
             {% include "../button/icon/run.html" %}
         </button>
-        <!--
         <button class="btn btn-primary aw-btn-action aw-btn-expand-child" title="Custom Execution" aw-expand="aw-spoiler-${ID}">
             {% include "../button/icon/expand.html" %}
         </button>
-        -->
         <a href="/ui/jobs/log?job=${ID}">
             <button class="btn btn-info aw-btn-action" title="Logs">
                 <i class="fa-solid fa-scroll fa-2x aw-btn-action-icon"></i>

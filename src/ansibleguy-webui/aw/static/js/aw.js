@@ -225,6 +225,10 @@ function escapeHTML(data) {
     return data;
 }
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 // API CALLS
 const CSRF_TOKEN = getCookie('csrftoken');
 

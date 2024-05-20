@@ -94,7 +94,7 @@ See also: [Contributing](https://github.com/ansibleguy/webui/blob/latest/CONTRIB
 
     - [x] Manual/immediate execution
 
-    - [ ] Custom Execution-Forms
+    - [x] Custom Execution-Forms
 
     - [ ] Support for [ad-hoc commands](https://docs.ansible.com/ansible/latest/command_guide/intro_adhoc.html)
 

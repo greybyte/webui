@@ -1,3 +1,47 @@
+ELEM_ID_TMPL_ROW2 = 'aw-api-data-tmpl-row2';
+ELEM_ID_TMPL_FIELD_TEXT = 'aw-api-data-tmpl-exec-text';
+ELEM_ID_TMPL_FIELD_BOOL = 'aw-api-data-tmpl-exec-bool';
+ELEM_ID_TMPL_FIELD_VERB = 'aw-api-data-tmpl-exec-verbosity';
+EXEC_BOOL_FIELDS = ['mode_check', 'mode_diff'];
+
+function buildExecutionFields(data, required = false) {
+    let prompts = [];
+
+    if (is_set(data)) {
+        let promptsRequired = data.split(',');
+        for (field of promptsRequired) {
+            let tmplElem = ELEM_ID_TMPL_FIELD_TEXT;
+            if (EXEC_BOOL_FIELDS.includes(field)) {
+                tmplElem = ELEM_ID_TMPL_FIELD_BOOL;
+            } else if (field == 'verbosity') {
+                tmplElem = ELEM_ID_TMPL_FIELD_VERB;
+            }
+
+            let fieldHtml = document.getElementById(tmplElem).innerHTML;
+            let prettyName = capitalizeFirstLetter(field);
+            prettyName = prettyName.replaceAll('_', ' ');
+
+            if (required) {
+                fieldHtml = fieldHtml.replaceAll('${attrs}', 'required');
+            }
+            if (field.includes('var=')) {
+                let varName = field.split('=')[1];
+                if (field.includes('#')) {
+                    [varName, prettyName] = varName.split('#');
+                }
+                fieldHtml = fieldHtml.replaceAll('${FIELD}', 'var=' + varName);
+
+            } else {
+                fieldHtml = fieldHtml.replaceAll('${FIELD}', field);
+            }
+            fieldHtml = fieldHtml.replaceAll('${PRETTY}', prettyName);
+            prompts.push(fieldHtml);
+        }
+    }
+
+    return prompts;
+}
+
 function updateApiTableDataJob(row, row2, entry) {
     // job
     row.innerHTML = document.getElementById(ELEM_ID_TMPL_ROW).innerHTML;
@@ -44,40 +88,54 @@ function updateApiTableDataJob(row, row2, entry) {
     }
     row.cells[7].innerHTML = actionsTemplate;
 
-    // execution stati
-    row2.innerHTML = document.getElementById(ELEM_ID_TMPL_ROW).innerHTML;
+    // custom execution
     row2.setAttribute("id", "aw-spoiler-" + entry.id);
     row2.setAttribute("hidden", "hidden");
-    row2.innerHTML = row2.innerHTML.replaceAll('${ID}', entry.id);
-    let execs = '<div>';
-    for (exec of entry.executions) {
-        execs += ('<hr><b>Start time</b>: ' + exec.time_start);
-        execs += ('<br><b>Finish time</b>: ' + exec.time_fin);
-        execs += ('<br><b>Duration</b>: ' + exec.time_duration);
-        execs += ('<br><b>Executed by</b>: ' + exec.user_name);
-        execs += ('<br><b>Status</b>: <span class="aw-job-status aw-job-status-' + exec.status_name.toLowerCase() + '">' + exec.status_name + '</span>');
-        if (is_set(exec.log_stdout) || is_set(exec.log_stderr) || is_set(exec.log_stdout_repo) || is_set(exec.log_stderr_repo)) {
-            let exec_logs = [];
-            if (is_set(exec.log_stdout)) {
-                exec_logs.push('<a href="' + exec.log_stdout_url + '" title="' + exec.log_stdout + '" download>Job Output</a>');
+    let execTemplate = document.getElementById(ELEM_ID_TMPL_ROW2).innerHTML;
+    execTemplate = execTemplate.replaceAll('${ID}', entry.id);
+    row2.innerHTML = execTemplate;
+    let prompts = buildExecutionFields(entry.execution_prompts_required, true);
+    prompts.push(...buildExecutionFields(entry.execution_prompts_optional));
+
+    console.log(prompts);
+
+    let execForm = document.getElementById('aw-job-exec-' + entry.id);
+    execForm.innerHTML = prompts.join('<br>') + execForm.innerHTML;
+    execForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        customExecution(this.elements);
+    })
+}
+
+function customExecution(formElements) {
+    let data = {};
+    let cmdArgs = '';
+    let job_id = undefined;
+    for (elem of formElements) {
+        if (elem.hasAttribute('name')) {
+            if (elem.name == 'job_id') {
+                job_id = elem.value;
+            } else if (elem.name.startsWith('var')) {
+                let varName = elem.name.split('=')[1];
+                cmdArgs += ' -e "' + varName + '=' + elem.value + '"';
+            } else {
+                data[elem.name] = elem.value;
             }
-            if (is_set(exec.log_stderr)) {
-                exec_logs.push('<a href="' + exec.log_stderr_url + '" title="' + exec.log_stderr + '" download>Job Error</a>');
-            }
-            if (is_set(exec.log_stdout_repo)) {
-                exec_logs.push('<a href="' + exec.log_stdout_repo_url + '" title="' + exec.log_stdout_repo + '" download>Repository Output</a>');
-            }
-            if (is_set(exec.log_stderr_repo)) {
-                exec_logs.push('<a href="' + exec.log_stderr_repo_url + '" title="' + exec.log_stderr_repo + '" download>Repository Error</a>');
-            }
-            execs += ('<br><b>Logs</b>: ' + exec_logs.join(', '));
-        }
-        if (is_set(exec.error_s)) {
-            execs += ('<br><br><b>Error</b>: <code>' + exec.error_s + '</code>');
         }
     }
-    execs += '</div>';
-    row2.innerHTML = row2.innerHTML.replaceAll('${EXECS}', execs);
+    if ('cmd_args' in data) {
+        cmdArgs += data['cmd_args'];
+    }
+    data['cmd_args'] = cmdArgs;
+
+    $.ajax({
+        type: "post",
+        url: "/api/job/" + job_id,
+        data: data,
+        success: function (result) { apiActionSuccess(result); },
+        error: function (result, exception) { apiActionError(result, exception); },
+    });
+
 }
 
 $( document ).ready(function() {

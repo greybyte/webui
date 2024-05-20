@@ -26,6 +26,7 @@ class JobExecutionReadResponse(serializers.ModelSerializer):
 
     job_name = serializers.CharField(required=False)
     job_comment = serializers.CharField(required=False)
+    comment = serializers.CharField(required=False)
     user_name = serializers.CharField(required=False)
     status_name = serializers.CharField(required=False)
     failed = serializers.BooleanField(required=False)
@@ -48,6 +49,7 @@ def get_job_execution_serialized(execution: JobExecution) -> dict:
     serialized['job'] = execution.job.id
     serialized['job_name'] = execution.job.name
     serialized['job_comment'] = execution.job.comment
+    serialized['comment'] = execution.comment
     serialized['user'] = execution.user.id if execution.user is not None else None
     serialized['user_name'] = execution.user_name
     serialized['time_start'] = execution.time_created_str

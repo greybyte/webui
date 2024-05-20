@@ -5,6 +5,7 @@
 ### 0.0.21
 
 * Added [validation against XSS](https://github.com/ansibleguy/webui/issues/44)
+* Execution prompts/forms to provide job overrides
 
 ----
 

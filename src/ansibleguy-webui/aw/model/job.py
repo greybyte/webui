@@ -81,6 +81,7 @@ class Job(BaseJob):
         'name', 'playbook_file', 'inventory_file', 'repository', 'schedule', 'enabled', 'limit', 'verbosity',
         'mode_diff', 'mode_check', 'tags', 'tags_skip', 'verbosity', 'comment', 'environment_vars', 'cmd_args',
         'credentials_default', 'credentials_needed', 'credentials_category',
+        'execution_prompts_required', 'execution_prompts_optional',
     ]
     form_fields_primary = ['name', 'playbook_file', 'inventory_file', 'repository']
     form_fields = CHANGE_FIELDS
@@ -103,6 +104,18 @@ class Job(BaseJob):
     )
     credentials_category = models.CharField(max_length=100, **DEFAULT_NONE)
     repository = models.ForeignKey(Repository, on_delete=models.SET_NULL, related_name='job_fk_repo', **DEFAULT_NONE)
+
+    execution_prompts_max_len = 2000
+    execution_prompts_regex = (r'^(limit|verbosity|comment|mode_diff|diff|mode_check|check|environment_vars|env_vars|'
+                               r'tags|tags_skip|skip_tags|cmd_args|var=[^,#]*?|var=[^#]*?#[^,]*?|[,$])+$')
+    execution_prompt_aliases = {
+        'check': 'mode_check',
+        'diff': 'mode_diff',
+        'env_vars': 'environment_vars',
+        'skip_tags': 'tags_skip',
+    }
+    execution_prompts_required = models.CharField(max_length=execution_prompts_max_len, **DEFAULT_NONE)
+    execution_prompts_optional = models.CharField(max_length=execution_prompts_max_len, **DEFAULT_NONE)
 
     def __str__(self) -> str:
         limit = '' if self.limit is None else f' [{self.limit}]'
@@ -194,8 +207,12 @@ class JobExecution(BaseJob):
     api_fields_read = [
         'id', 'job', 'job_name', 'user', 'user_name', 'result', 'status', 'status_name', 'time_start', 'time_fin',
         'failed', 'error_s', 'error_m', 'log_stdout', 'log_stdout_url', 'log_stderr', 'log_stderr_url', 'job_comment',
-        'credential_global', 'credential_user', 'command', 'log_stdout_repo', 'log_stderr_repo',
+        'comment', 'credential_global', 'credential_user', 'command', 'log_stdout_repo', 'log_stderr_repo',
         'log_stdout_repo_url', 'log_stderr_repo_url',
+    ]
+    api_fields_exec = [
+        'comment', 'limit', 'verbosity', 'mode_diff', 'mode_check', 'environment_vars', 'tags', 'tags_skip',
+        'cmd_args',
     ]
     log_file_fields = ['log_stdout', 'log_stderr', 'log_stdout_repo', 'log_stderr_repo']
 
@@ -275,8 +292,6 @@ class JobExecution(BaseJob):
 
 
 class JobQueue(BareModel):
-    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='jobqueue_fk_job')
-    user = models.ForeignKey(
-        USERS, on_delete=models.SET_NULL, null=True,
-        related_name='jobqueue_fk_user',
+    execution = models.ForeignKey(
+        JobExecution, on_delete=models.CASCADE, related_name='jobqueue_fk_jobexec', **DEFAULT_NONE,
     )

@@ -1,8 +1,11 @@
+from re import match as regex_match
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from rest_framework.views import APIView
 from rest_framework import serializers
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiParameter
 
 from aw.config.hardcoded import JOB_EXECUTION_LIMIT
@@ -33,7 +36,28 @@ class JobWriteRequest(serializers.ModelSerializer):
             if field in attrs:
                 validate_no_xss(value=attrs[field], field=field)
 
+        for prompt_field in ['execution_prompts_required', 'execution_prompts_optional']:
+            if is_set(attrs[prompt_field]):
+                if regex_match(Job.execution_prompts_regex, attrs[prompt_field]) is None:
+                    raise ValidationError('Invalid execution prompt pattern')
+
+                translated = []
+                for field in attrs[prompt_field].split(','):
+                    if field in Job.execution_prompt_aliases:
+                        translated.append(Job.execution_prompt_aliases[field])
+
+                    else:
+                        translated.append(field)
+
+                attrs[prompt_field] = ','.join(translated)
+
         return attrs
+
+
+class JobExecutionRequest(serializers.ModelSerializer):
+    class Meta:
+        model = JobExecution
+        fields = JobExecution.api_fields_exec
 
 
 def _find_job(job_id: int) -> (Job, None):
@@ -285,6 +309,7 @@ class APIJobItem(APIView):
         request=None,
         responses={
             200: OpenApiResponse(JobReadResponse, description='Job execution queued'),
+            400: OpenApiResponse(JobReadResponse, description='Bad parameters provided'),
             403: OpenApiResponse(JobReadResponse, description='Not privileged to execute the job'),
             404: OpenApiResponse(JobReadResponse, description='Job does not exist'),
         },
@@ -300,7 +325,23 @@ class APIJobItem(APIView):
                 if not has_job_permission(user=user, job=job, permission_needed=CHOICE_PERMISSION_EXECUTE):
                     return Response(data={'msg': f"Not privileged to execute the job '{job.name}'"}, status=403)
 
-                queue_add(job=job, user=user)
+                if len(request.data) > 0:
+                    serializer = JobExecutionRequest(data=request.data)
+                    if not serializer.is_valid():
+                        return Response(
+                            data={'msg': f"Provided job-execution data is not valid: '{serializer.errors}'"},
+                            status=400,
+                        )
+
+                    execution = JobExecution(
+                        user=user, job=job, **serializer.validated_data,
+                    )
+
+                else:
+                    execution = JobExecution(user=user, job=job, comment='Triggered')
+
+                execution.save()
+                queue_add(execution=execution)
                 return Response(data={'msg': f"Job '{job.name}' execution queued"}, status=200)
 
         except ObjectDoesNotExist:
