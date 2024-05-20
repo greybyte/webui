@@ -10,7 +10,7 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiParamet
 
 from aw.model.repository import Repository
 from aw.api_endpoints.base import API_PERMISSION, GenericResponse, get_api_user, LogDownloadResponse, api_docs_put, \
-    api_docs_delete, api_docs_post
+    api_docs_delete, api_docs_post, validate_no_xss
 from aw.utils.permission import has_manager_privileges, has_repository_permission, get_viewable_repositories
 from aw.model.job import Job
 from aw.utils.util import unset_or_null, is_set
@@ -26,6 +26,13 @@ class RepositoryWriteRequest(serializers.ModelSerializer):
         fields = Repository.api_fields_write
 
     name = serializers.CharField(validators=[])  # uc on update
+
+    def validate(self, attrs: dict):
+        for field in Repository.api_fields_write:
+            if field in attrs:
+                validate_no_xss(value=attrs[field], field=field)
+
+        return attrs
 
 
 class RepositoryReadResponse(RepositoryWriteRequest):

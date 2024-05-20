@@ -206,13 +206,32 @@ function sortTable($sortButton, order = 'desc') {
     }
 }
 
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+function replaceAll(str, search, replace) {
+    return str.replace(new RegExp(escapeRegExp(search), 'g'), replace);
+}
+
+// see: https://docs.djangoproject.com/en/5.0/ref/templates/language/#automatic-html-escaping
+function escapeHTML(data) {
+    if (!is_set(data)) {
+        return data;
+    }
+    data = data.replaceAll('<', '&lt;');
+    data = data.replaceAll('>', '&gt;');
+    data = data.replaceAll('&', '&amp;');
+    return data;
+}
+
 // API CALLS
 const CSRF_TOKEN = getCookie('csrftoken');
 
 function apiActionSuccess(result) {
     resultDiv = document.getElementById('aw-api-result');
     if (result.msg) {
-        resultDiv.innerHTML = 'Success: ' + result.msg;
+        resultDiv.innerHTML = 'Success: ' + escapeHTML(result.msg);
     } else {
         resultDiv.innerHTML = 'Success';
     }
@@ -234,7 +253,7 @@ function apiActionError(result, exception) {
     errorDiv =  document.getElementById('aw-api-error');
     let errorHTML = "Got error: " + result.statusText + ' (' + result.status + ')';
     if (is_set(result.responseJSON.msg)) {
-        errorHTML += ' - ' + result.responseJSON.msg;
+        errorHTML += ' - ' + escapeHTML(result.responseJSON.msg);
     } else {
         errorHTML += '<br><button class="btn btn-warning aw-btn-action" title="Full error" onclick="apiActionFullError()">Show full error</button><br>';
     }

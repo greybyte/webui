@@ -1,11 +1,3 @@
-function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
-
-function replaceAll(str, search, replace) {
-    return str.replace(new RegExp(escapeRegExp(search), 'g'), replace);
-}
-
 function addLogLines($this) {
     let logParentElement = $this.attr("aw-expand");
     let logElement = $this.attr("aw-log");

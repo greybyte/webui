@@ -39,6 +39,8 @@ function updateApiTableDataJob(row, row2, entry) {
     actionsTemplate = actionsTemplate.replaceAll('${ID}', entry.id);
     if (lastExecution != null) {
         actionsTemplate = actionsTemplate.replaceAll('${EXEC_ID_1}', lastExecution.id);
+    } else {
+        actionsTemplate = actionsTemplate.replaceAll('${EXEC_ID_1}', 0);
     }
     row.cells[7].innerHTML = actionsTemplate;
 

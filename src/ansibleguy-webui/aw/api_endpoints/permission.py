@@ -10,7 +10,7 @@ from aw.model.job_credential import JobGlobalCredentials
 from aw.model.permission import JobPermission, JobPermissionMapping, JobPermissionMemberUser, \
     JobPermissionMemberGroup, JobCredentialsPermissionMapping, JobRepositoryPermissionMapping
 from aw.api_endpoints.base import API_PERMISSION, GenericResponse, get_api_user, api_docs_put, api_docs_delete, \
-    api_docs_post
+    api_docs_post, validate_no_xss
 from aw.utils.permission import has_manager_privileges
 from aw.utils.util import is_set
 from aw.base import USERS, GROUPS
@@ -59,6 +59,13 @@ class PermissionWriteRequest(serializers.ModelSerializer):
         )
         self.fields['users'] = serializers.MultipleChoiceField(choices=[user.id for user in USERS.objects.all()])
         self.fields['groups'] = serializers.MultipleChoiceField(choices=[group.id for group in GROUPS.objects.all()])
+
+    def validate(self, attrs: dict):
+        for field in JobPermission.api_fields_write:
+            if field in attrs:
+                validate_no_xss(value=attrs[field], field=field)
+
+        return attrs
 
     @staticmethod
     def create_or_update(validated_data: dict, perm: JobPermission = None):

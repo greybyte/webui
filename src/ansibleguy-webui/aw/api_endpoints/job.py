@@ -11,7 +11,7 @@ from aw.model.permission import CHOICE_PERMISSION_READ, CHOICE_PERMISSION_EXECUT
     CHOICE_PERMISSION_WRITE, CHOICE_PERMISSION_DELETE
 from aw.model.job_credential import JobGlobalCredentials
 from aw.api_endpoints.base import API_PERMISSION, get_api_user, BaseResponse, GenericResponse, \
-    LogDownloadResponse, api_docs_put, api_docs_delete, api_docs_post
+    LogDownloadResponse, api_docs_put, api_docs_delete, api_docs_post, validate_no_xss
 from aw.api_endpoints.job_util import get_viewable_jobs_serialized, JobReadResponse, get_job_executions_serialized, \
     JobExecutionReadResponse, get_viewable_jobs, get_job_execution_serialized, get_log_file_content
 from aw.utils.permission import has_job_permission, has_credentials_permission, has_manager_privileges
@@ -27,6 +27,13 @@ class JobWriteRequest(serializers.ModelSerializer):
         fields = Job.api_fields_write
 
     name = serializers.CharField(validators=[])  # uc on update
+
+    def validate(self, attrs: dict):
+        for field in Job.api_fields_write:
+            if field in attrs:
+                validate_no_xss(value=attrs[field], field=field)
+
+        return attrs
 
 
 def _find_job(job_id: int) -> (Job, None):

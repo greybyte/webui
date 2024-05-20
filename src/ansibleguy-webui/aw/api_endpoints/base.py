@@ -2,13 +2,16 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.utils.html import escape as escape_html
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_api_key.permissions import BaseHasAPIKey
 from drf_spectacular.utils import OpenApiResponse
 
 from aw.model.api import AwAPIKey
 from aw.base import USERS, GROUPS
+from aw.utils.util import is_set
 
 
 class HasAwAPIKey(BaseHasAPIKey):
@@ -88,3 +91,8 @@ def api_docs_post(item: str) -> dict:
 def not_implemented(*args, **kwargs):
     del args, kwargs
     return JsonResponse({'error': 'Not yet implemented'}, status=404)
+
+
+def validate_no_xss(value: str, field: str):
+    if is_set(value) and isinstance(value, str) and value != escape_html(value):
+        raise ValidationError(f"Found illegal characters in field '{field}'")

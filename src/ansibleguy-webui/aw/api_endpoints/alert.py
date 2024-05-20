@@ -7,7 +7,7 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from aw.model.job import Job
 from aw.api_endpoints.base import API_PERMISSION, GenericResponse, get_api_user, api_docs_put, api_docs_delete, \
-    api_docs_post
+    api_docs_post, validate_no_xss
 from aw.utils.permission import has_manager_privileges
 from aw.model.alert import BaseAlert, AlertPlugin, AlertGlobal, AlertGroup, AlertUser
 
@@ -197,6 +197,13 @@ class AlertUserWriteRequest(BaseAlertWriteRequest):
         model = AlertUser
         fields = AlertUser.api_fields_write
 
+    def validate(self, attrs: dict):
+        for field in AlertUser.api_fields_write:
+            if field in attrs:
+                validate_no_xss(value=attrs[field], field=field)
+
+        return attrs
+
 
 class APIAlertUser(GenericAPIView):
     http_method_names = ['get', 'post']
@@ -351,6 +358,13 @@ class AlertGlobalWriteRequest(BaseAlertWriteRequest):
     class Meta:
         model = AlertGlobal
         fields = AlertGlobal.api_fields_write
+
+    def validate(self, attrs: dict):
+        for field in AlertGlobal.api_fields_write:
+            if field in attrs:
+                validate_no_xss(value=attrs[field], field=field)
+
+        return attrs
 
 
 class APIAlertGlobal(GenericAPIView):
@@ -512,6 +526,13 @@ class AlertGroupWriteRequest(BaseAlertWriteRequest):
     class Meta:
         model = AlertGroup
         fields = AlertGroup.api_fields_write
+
+    def validate(self, attrs: dict):
+        for field in AlertGroup.api_fields_write:
+            if field in attrs:
+                validate_no_xss(value=attrs[field], field=field)
+
+        return attrs
 
 
 class APIAlertGroup(GenericAPIView):
