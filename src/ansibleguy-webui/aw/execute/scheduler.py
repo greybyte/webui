@@ -78,7 +78,6 @@ class Scheduler:
         except Exception as err:
             log(msg=f'Got unexpected error: {err}', level=1)
             self.stop()
-            return
 
     def status(self):
         log(msg=f"Running job-threads: {self.thread_manager.list_pretty()}", level=4)
