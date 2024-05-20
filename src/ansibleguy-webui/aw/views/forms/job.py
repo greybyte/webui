@@ -101,7 +101,7 @@ def job_edit(request, job_id: int = None, clone: bool = False) -> HttpResponse:
 
         else:
             if not has_job_permission(user=request.user, job=job['id'], permission_needed=CHOICE_PERMISSION_WRITE):
-                return redirect(f"/ui/jobs/manage?error=Not privileged to modify the job '{job.name}'")
+                return redirect(f"/ui/jobs/manage?error=Not privileged to modify the job '{job['name']}'")
 
             form_method = 'put'
             form_api += f'/{job_id}'
