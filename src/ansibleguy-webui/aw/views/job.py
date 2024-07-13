@@ -5,8 +5,10 @@ from django.contrib.auth.decorators import login_required
 
 from aw.utils.http import ui_endpoint_wrapper, ui_endpoint_wrapper_kwargs
 from aw.model.job import JobExecution, JobExecutionResultHost
+from aw.model.job_credential import JobGlobalCredentials, JobUserCredentials
 from aw.api_endpoints.job_util import get_viewable_jobs
 from aw.utils.util import get_next_cron_execution_str
+from aw.utils.permission import has_credentials_permission, CHOICE_PERMISSION_READ
 from aw.views.forms.job import job_edit, job_clone, job_credentials_edit, job_repository_static_edit, \
     job_repository_git_edit
 
@@ -21,6 +23,11 @@ def manage(request) -> HttpResponse:
     executions = {}
     next_executions = {}
     execution_results_hosts = {}
+    credentials_user = [creds for creds in JobUserCredentials.objects.filter(user=request.user)]
+    credentials_global = [
+        creds for creds in JobGlobalCredentials.objects.all()
+        if has_credentials_permission(user=request.user, credentials=creds, permission_needed=CHOICE_PERMISSION_READ)
+    ]
 
     for job in jobs_viewable:
         executions[job.id] = JobExecution.objects.filter(job=job).order_by('-updated')[:LIMIT_JOB_RESULTS]
@@ -46,6 +53,7 @@ def manage(request) -> HttpResponse:
         context={
             'jobs': jobs_viewable, 'executions': executions, 'next_executions': next_executions,
             'show_update_time': True, 'execution_results_hosts': execution_results_hosts,
+            'credentials_user': credentials_user, 'credentials_global': credentials_global,
         }
     )
 

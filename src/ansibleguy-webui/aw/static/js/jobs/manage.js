@@ -1,10 +1,11 @@
 ELEM_ID_TMPL_ROW2 = 'aw-api-data-tmpl-row2';
 ELEM_ID_TMPL_FIELD_TEXT = 'aw-api-data-tmpl-exec-text';
 ELEM_ID_TMPL_FIELD_CHOICES = 'aw-api-data-tmpl-exec-choices';
+ELEM_ID_TMPL_FIELD_CREDS = 'aw-api-data-tmpl-exec-creds';
 ELEM_ID_TMPL_FIELD_BOOL = 'aw-api-data-tmpl-exec-bool';
 ELEM_ID_TMPL_FIELD_VERB = 'aw-api-data-tmpl-exec-verbosity';
 EXEC_BOOL_FIELDS = ['mode_check', 'mode_diff'];
-const PROMPT_SIMPLE_TYPES = ['tags', 'skip_tags', 'mode_check', 'mode_diff', 'limit', 'env_vars', 'cmd_args', 'verbosity'];
+const PROMPT_SIMPLE_TYPES = ['tags', 'skip_tags', 'mode_check', 'mode_diff', 'limit', 'env_vars', 'cmd_args', 'verbosity', 'credentials'];
 const PROMPT_SEPARATOR = ';';
 const PROMPT_ARG_SEPARATOR = '#';
 const PROMPT_CHOICE_SEPARATOR = ',';
@@ -17,6 +18,7 @@ PROMPT_SIMPLE_NAMES['limit'] = 'Limit';
 PROMPT_SIMPLE_NAMES['env_vars'] = 'Environmental Variables';
 PROMPT_SIMPLE_NAMES['cmd_args'] = 'CLI Arguments';
 PROMPT_SIMPLE_NAMES['verbosity'] = 'Verbosity';
+PROMPT_SIMPLE_NAMES['credentials'] = 'Credentials';
 
 
 function buildExecutionFields(promptsSerialized) {
@@ -33,6 +35,8 @@ function buildExecutionFields(promptsSerialized) {
                     tmplElem = ELEM_ID_TMPL_FIELD_BOOL;
                 } else if (field == 'verbosity') {
                     tmplElem = ELEM_ID_TMPL_FIELD_VERB;
+                } else if (field == 'credentials') {
+                    tmplElem = ELEM_ID_TMPL_FIELD_CREDS;
                 }
                 let fieldHtml = document.getElementById(tmplElem).innerHTML;
                 fieldHtml = fieldHtml.replaceAll('${PRETTY}', name);
@@ -160,6 +164,12 @@ function customExecution(formElements) {
             } else if (elem.name.startsWith('var')) {
                 let varName = elem.name.split('=')[1];
                 cmdArgs += ' -e "' + varName + '=' + elem.value + '"';
+            } else if (elem.name == 'credentials') {
+                if (elem.value.startsWith('global_')) {
+                    data['credential_global'] = elem.value.split('_')[1];
+                } else {
+                    data['credential_user'] = elem.value.split('_')[1];
+                }
             } else {
                 data[elem.name] = elem.value;
             }

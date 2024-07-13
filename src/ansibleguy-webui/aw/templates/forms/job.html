@@ -137,6 +137,15 @@
             </select>
         </div>
     </div>
+    <div class="mb-3 row">
+        <label for="id_prompt_credentials" class="form-label col-sm-2 col-form-label form-label-sub">Prompt Credentials</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="id_prompt_credentials" name="prompt_credentials">
+                <option value="True" {% if existing|check_job_prompt_flag:"credentials" %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not existing|check_job_prompt_flag:"credentials" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
     <br>
     <div id="aw-job-form-prompts"></div>
 </div>
