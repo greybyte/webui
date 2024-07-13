@@ -77,14 +77,14 @@ def validate_cronjob(value):
 
 
 class Job(BaseJob):
-    CHANGE_FIELDS = [
+    form_fields = [
         'name', 'playbook_file', 'inventory_file', 'repository', 'schedule', 'enabled', 'limit', 'verbosity',
         'mode_diff', 'mode_check', 'tags', 'tags_skip', 'verbosity', 'comment', 'environment_vars', 'cmd_args',
         'credentials_default', 'credentials_needed', 'credentials_category',
-        'execution_prompts_required', 'execution_prompts_optional',
     ]
+    CHANGE_FIELDS = form_fields.copy()
+    CHANGE_FIELDS.append('execution_prompts')
     form_fields_primary = ['name', 'playbook_file', 'inventory_file', 'repository']
-    form_fields = CHANGE_FIELDS
     api_fields_read = ['id']
     api_fields_read.extend(CHANGE_FIELDS)
     api_fields_write = api_fields_read.copy()
@@ -105,17 +105,10 @@ class Job(BaseJob):
     credentials_category = models.CharField(max_length=100, **DEFAULT_NONE)
     repository = models.ForeignKey(Repository, on_delete=models.SET_NULL, related_name='job_fk_repo', **DEFAULT_NONE)
 
-    execution_prompts_max_len = 2000
-    execution_prompts_regex = (r'^(limit|verbosity|comment|mode_diff|diff|mode_check|check|environment_vars|env_vars|'
-                               r'tags|tags_skip|skip_tags|cmd_args|var=[^,#]*?|var=[^#]*?#[^,]*?|[,$])+$')
-    execution_prompt_aliases = {
-        'check': 'mode_check',
-        'diff': 'mode_diff',
-        'env_vars': 'environment_vars',
-        'skip_tags': 'tags_skip',
-    }
-    execution_prompts_required = models.CharField(max_length=execution_prompts_max_len, **DEFAULT_NONE)
-    execution_prompts_optional = models.CharField(max_length=execution_prompts_max_len, **DEFAULT_NONE)
+    execution_prompts_max_len = 5000
+    execution_prompt_separator = ';'
+    execution_prompt_arg_separator = '#'
+    execution_prompts = models.CharField(max_length=execution_prompts_max_len, **DEFAULT_NONE)
 
     def __str__(self) -> str:
         limit = '' if self.limit is None else f' [{self.limit}]'

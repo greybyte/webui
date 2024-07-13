@@ -50,7 +50,17 @@
     <div id="aw-api-data-tmpl-exec-text" hidden="hidden">
         <div class="mb-3 row">
             <label for="id_${FIELD}" class="form-label col-sm-2 col-form-label">${PRETTY}</label>
-            <div class="col-sm-10"><input class="form-control" id="id_${FIELD}" name="${FIELD}" ${ATTRS}></div>
+            <div class="col-sm-10"><input class="form-control" id="id_${FIELD}" name="${FIELD}" ${attrs}></div>
+        </div>
+    </div>
+    <div id="aw-api-data-tmpl-exec-choices" hidden="hidden">
+        <div class="mb-3 row">
+            <label for="id_${FIELD}" class="form-label col-sm-2 col-form-label">${PRETTY}</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="id_${FIELD}" name="${FIELD}" ${attrs}>
+                    ${OPTIONS}
+                </select>
+            </div>
         </div>
     </div>
     <div id="aw-api-data-tmpl-exec-bool" hidden="hidden">

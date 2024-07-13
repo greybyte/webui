@@ -36,21 +36,6 @@ class JobWriteRequest(serializers.ModelSerializer):
             if field in attrs:
                 validate_no_xss(value=attrs[field], field=field)
 
-        for prompt_field in ['execution_prompts_required', 'execution_prompts_optional']:
-            if prompt_field in attrs and is_set(attrs[prompt_field]):
-                if regex_match(Job.execution_prompts_regex, attrs[prompt_field]) is None:
-                    raise ValidationError('Invalid execution prompt pattern')
-
-                translated = []
-                for field in attrs[prompt_field].split(','):
-                    if field in Job.execution_prompt_aliases:
-                        translated.append(Job.execution_prompt_aliases[field])
-
-                    else:
-                        translated.append(field)
-
-                attrs[prompt_field] = ','.join(translated)
-
         return attrs
 
 

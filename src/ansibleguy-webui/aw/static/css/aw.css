@@ -381,6 +381,14 @@ form label {
     padding-top: 1vh !important;
 }
 
+.form-label-sub {
+    font-weight: normal !important;
+}
+
+.col-sm-10 .btn {
+    margin-top: 0.5vh;
+}
+
 form .form-control {
     color: var(--tc1) !important;
     background-color: var(--bg) !important;
@@ -647,4 +655,8 @@ td div hr {
 
 .aw-log-change {
     color: #F07201;
+}
+
+.aw-log-debug {
+    color: #326fa7;
 }

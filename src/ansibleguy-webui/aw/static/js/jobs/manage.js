@@ -1,41 +1,84 @@
 ELEM_ID_TMPL_ROW2 = 'aw-api-data-tmpl-row2';
 ELEM_ID_TMPL_FIELD_TEXT = 'aw-api-data-tmpl-exec-text';
+ELEM_ID_TMPL_FIELD_CHOICES = 'aw-api-data-tmpl-exec-choices';
 ELEM_ID_TMPL_FIELD_BOOL = 'aw-api-data-tmpl-exec-bool';
 ELEM_ID_TMPL_FIELD_VERB = 'aw-api-data-tmpl-exec-verbosity';
 EXEC_BOOL_FIELDS = ['mode_check', 'mode_diff'];
+const PROMPT_SIMPLE_TYPES = ['tags', 'skip_tags', 'mode_check', 'mode_diff', 'limit', 'env_vars', 'cmd_args', 'verbosity'];
+const PROMPT_SEPARATOR = ';';
+const PROMPT_ARG_SEPARATOR = '#';
+const PROMPT_CHOICE_SEPARATOR = ',';
+const PROMPT_SIMPLE_NAMES = [];
+PROMPT_SIMPLE_NAMES['tags'] = 'Tags';
+PROMPT_SIMPLE_NAMES['skip_tags'] = 'Skip Tags';
+PROMPT_SIMPLE_NAMES['mode_check'] = 'Check Mode';
+PROMPT_SIMPLE_NAMES['mode_diff'] = 'Difference Mode';
+PROMPT_SIMPLE_NAMES['limit'] = 'Limit';
+PROMPT_SIMPLE_NAMES['env_vars'] = 'Environmental Variables';
+PROMPT_SIMPLE_NAMES['cmd_args'] = 'CLI Arguments';
+PROMPT_SIMPLE_NAMES['verbosity'] = 'Verbosity';
 
-function buildExecutionFields(data, required = false) {
+
+function buildExecutionFields(promptsSerialized) {
     let prompts = [];
 
-    if (is_set(data)) {
-        let promptsRequired = data.split(',');
-        for (field of promptsRequired) {
+    if (is_set(promptsSerialized)) {
+        for (field of promptsSerialized.split(PROMPT_SEPARATOR)) {
             let tmplElem = ELEM_ID_TMPL_FIELD_TEXT;
-            if (EXEC_BOOL_FIELDS.includes(field)) {
-                tmplElem = ELEM_ID_TMPL_FIELD_BOOL;
-            } else if (field == 'verbosity') {
-                tmplElem = ELEM_ID_TMPL_FIELD_VERB;
-            }
 
-            let fieldHtml = document.getElementById(tmplElem).innerHTML;
-            let prettyName = capitalizeFirstLetter(field);
-            prettyName = prettyName.replaceAll('_', ' ');
+            if (PROMPT_SIMPLE_TYPES.includes(field)) {
+                let name = PROMPT_SIMPLE_NAMES[field];
 
-            if (required) {
-                fieldHtml = fieldHtml.replaceAll('${attrs}', 'required');
-            }
-            if (field.includes('var=')) {
-                let varName = field.split('=')[1];
-                if (field.includes('#')) {
-                    [varName, prettyName] = varName.split('#');
+                if (EXEC_BOOL_FIELDS.includes(field)) {
+                    tmplElem = ELEM_ID_TMPL_FIELD_BOOL;
+                } else if (field == 'verbosity') {
+                    tmplElem = ELEM_ID_TMPL_FIELD_VERB;
                 }
-                fieldHtml = fieldHtml.replaceAll('${FIELD}', 'var=' + varName);
+                let fieldHtml = document.getElementById(tmplElem).innerHTML;
+                fieldHtml = fieldHtml.replaceAll('${PRETTY}', name);
+                fieldHtml = fieldHtml.replaceAll('${FIELD}', field);
+                fieldHtml = fieldHtml.replaceAll('${attrs}', 'required');
+                prompts.push(fieldHtml);
 
             } else {
-                fieldHtml = fieldHtml.replaceAll('${FIELD}', field);
+                let fields = field.split(PROMPT_ARG_SEPARATOR);
+                let name = fields[0];
+                let varName = fields[1];
+                let kind = fields[2];
+                let required = fields[3];
+                let choices = fields[4];
+                let regex = fields[5];
+
+                let attrs = '';
+                if (is_set(regex)) {
+                    regex = atob(regex);
+                    attrs = 'pattern="' + regex + '" '
+                }
+                if (required == '1') {
+                    attrs += 'required';
+                }
+
+                if (kind == 'dropdown') {
+                    tmplElem = ELEM_ID_TMPL_FIELD_CHOICES;
+                }
+
+                let fieldHtml = document.getElementById(tmplElem).innerHTML;
+                fieldHtml = fieldHtml.replaceAll('${PRETTY}', name);
+                fieldHtml = fieldHtml.replaceAll('${FIELD}', 'var=' + varName);
+                if (is_set(attrs)) {
+                    fieldHtml = fieldHtml.replaceAll('${attrs}', attrs);
+                }
+
+                if (kind == 'dropdown' && is_set(choices)) {
+                    let options = [];
+                    for (choice of choices.split(PROMPT_CHOICE_SEPARATOR)) {
+                        options.push('<option value="' + choice + '">' + choice + '</option>');
+                    }
+                    fieldHtml = fieldHtml.replaceAll('${OPTIONS}', options.join(''));
+                }
+
+                prompts.push(fieldHtml);
             }
-            fieldHtml = fieldHtml.replaceAll('${PRETTY}', prettyName);
-            prompts.push(fieldHtml);
         }
     }
 
@@ -94,8 +137,7 @@ function updateApiTableDataJob(row, row2, entry) {
     let execTemplate = document.getElementById(ELEM_ID_TMPL_ROW2).innerHTML;
     execTemplate = execTemplate.replaceAll('${ID}', entry.id);
     row2.innerHTML = execTemplate;
-    let prompts = buildExecutionFields(entry.execution_prompts_required, true);
-    prompts.push(...buildExecutionFields(entry.execution_prompts_optional));
+    let prompts = buildExecutionFields(entry.execution_prompts);
 
     console.log(prompts);
 

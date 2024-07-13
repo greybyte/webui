@@ -2,6 +2,12 @@
 
 ## Version 0
 
+### 0.0.22
+
+* Improved [custom execution prompts](https://webui.ansibleguy.net/en/latest/usage/jobs.html#execute)
+
+----
+
 ### 0.0.21
 
 * Added [validation against XSS](https://github.com/ansibleguy/webui/issues/44)

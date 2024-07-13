@@ -5,6 +5,14 @@ const CHOICE_SELECTED_FLAG = 'selected';
 const CHOICES_CLASS_DIR = 'aw-fs-choice-dir';
 const CHOICES_CLASS_FILE = 'aw-fs-choice-file';
 const CHOICES_CLASS_VALUE = 'aw-fs-value';
+const ELEM_ID_TMPL_PROMPT = 'aw-job-form-prompt-tmpl';
+const ELEM_ID_PROMPTS = 'aw-job-form-prompts';
+const ELEM_ID_PROMPT_PREFIX = 'aw-job-form-prompt-'
+const API_FIELD_PROMPTS = 'execution_prompts';
+const PROMPT_SIMPLE_TYPES = ['tags', 'skip_tags', 'mode_check', 'mode_diff', 'limit', 'env_vars', 'cmd_args', 'verbosity'];
+const PROMPT_SEPARATOR = ';';
+const PROMPT_ARG_SEPARATOR = '#';
+var PROMPT_ID = 0;
 
 function apiBrowseDirFilteredChoices(choices, userInputCurrent, allowEmpty = false) {
     let choicesFiltered = [];
@@ -272,10 +280,155 @@ function handleKeyTab($this) {
     }
 }
 
+function addPromptInputsWithDefaults(name, varName, kind, required, choices, regex) {
+    PROMPT_ID += 1;
+    let tmpl = document.getElementById(ELEM_ID_TMPL_PROMPT).innerHTML;
+    tmpl = tmpl.replaceAll('${ID}', PROMPT_ID)
+    let promptElement = document.createElement('div');
+    promptElement.id = ELEM_ID_PROMPT_PREFIX + PROMPT_ID;
+
+    if (!is_set(name)) {
+        tmpl = tmpl.replaceAll('${NAME}', '');
+    } else {
+        tmpl = tmpl.replaceAll('${NAME}', name);
+    }
+
+    if (!is_set(varName)) {
+        tmpl = tmpl.replaceAll('${VAR_NAME}', '');
+    } else {
+        tmpl = tmpl.replaceAll('${VAR_NAME}', varName);
+    }
+
+    if (kind == 'dropdown') {
+        tmpl = tmpl.replaceAll('${kind_text}', '');
+        tmpl = tmpl.replaceAll('${kind_dd}', 'selected');
+    } else {
+        tmpl = tmpl.replaceAll('${kind_text}', 'selected');
+        tmpl = tmpl.replaceAll('${kind_dd}', '');
+    }
+
+    if (required == '1') {
+        tmpl = tmpl.replaceAll('${req_req}', 'selected');
+        tmpl = tmpl.replaceAll('${req_opt}', '');
+    } else {
+        tmpl = tmpl.replaceAll('${req_req}', '');
+        tmpl = tmpl.replaceAll('${req_opt}', 'selected');
+    }
+
+    if (!is_set(regex)) {
+       tmpl =  tmpl.replaceAll('${REGEX}', '');
+    } else {
+        tmpl = tmpl.replaceAll('${REGEX}', regex);
+    }
+
+    if (!is_set(choices)) {
+        tmpl = tmpl.replaceAll('${CHOICES}', '');
+    } else {
+        tmpl = tmpl.replaceAll('${CHOICES}', choices);
+    }
+
+    promptElement.innerHTML = tmpl;
+    document.getElementById(ELEM_ID_PROMPTS).append(promptElement);
+}
+
+function addPromptInputs() {
+    addPromptInputsWithDefaults('', '', '', '', '', '');
+}
+
+function initPromptInputs() {
+    if (PROMPT_CNF == 'None') {
+        return;
+    }
+    for (let prompt of PROMPT_CNF.split(PROMPT_SEPARATOR)) {
+        if (PROMPT_SIMPLE_TYPES.includes(prompt)) {
+            continue;
+        }
+        let fields = prompt.split(PROMPT_ARG_SEPARATOR);
+        let regex = fields[5];
+        if (is_set(regex)) {
+            regex = atob(regex);
+        }
+
+        addPromptInputsWithDefaults(fields[0], fields[1], fields[2], fields[3], fields[4], regex);
+    }
+}
+
+function removePromptInputs(promptId) {
+    document.getElementById(ELEM_ID_PROMPT_PREFIX + promptId).remove();
+}
+
 $( document ).ready(function() {
     getRepositoryToBrowse();
     setInterval('getRepositoryToBrowse()', (DATA_REFRESH_SEC * 500));
+    initPromptInputs();
 
+    $(".aw-main").on("submit", "#aw-job-form", function(event) {
+        event.preventDefault();
+
+        var form = $(this);
+        var actionUrl = form.attr('action');
+        var method = form.attr('method');
+        var refresh = false;
+
+        var job = [];
+        var prompts = [];
+        var promptFields = [];
+        for (let field of form[0]) {
+            if (['input', 'select'].includes(field.localName)) {
+                if (field.name.startsWith('prompt_')) {
+                    let promptNameParts = field.name.split('_');
+                    if (promptNameParts.length == 2) {
+                        prompts.push(promptNameParts[1]);
+                        continue;
+                    }
+
+                    let promptId = promptNameParts[1];
+                    let fieldName = promptNameParts[2];
+                    if (promptFields[promptId] === undefined) {
+                        promptFields[promptId] = [];
+                    }
+                    promptFields[promptId][fieldName] = field.value;
+
+                } else {
+                    job.push(field.name + '=' + field.value);
+                }
+            }
+        }
+
+        for (let i = 1; i <= promptFields.length; i++) {
+            if (promptFields[i] === undefined) {
+                continue;
+            }
+            let prompt = [];
+            prompt.push(promptFields[i].name);
+            prompt.push(promptFields[i].varName);
+            prompt.push(promptFields[i].kind);
+            prompt.push(promptFields[i].required);
+            prompt.push(promptFields[i].choices);
+            prompt.push(btoa(promptFields[i].regex));
+            prompts.push(prompt.join(PROMPT_ARG_SEPARATOR));
+        }
+
+        job.push(API_FIELD_PROMPTS + '=' + prompts.join(PROMPT_SEPARATOR));
+
+        var jobSerialized = job.join('&');
+
+        $.ajax({
+            type: method,
+            url: actionUrl,
+            data: jobSerialized,
+            success: function (result) { apiActionSuccess(result); },
+            error: function (result, exception) { apiActionError(result, exception); },
+        });
+
+        return false;
+    });
+    $(".aw-main").on("click", "#aw-job-form-prompt-add", function(){
+        addPromptInputs();
+    });
+    $(".aw-main").on("click", ".aw-job-form-prompt-del", function(){
+        removePromptInputs($(this).attr("name"));
+    });
     $(".aw-main").on("input", ".aw-fs-browse", function(){
         updateChoices(jQuery(this));
     });

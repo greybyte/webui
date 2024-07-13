@@ -55,26 +55,6 @@ class JobForm(forms.ModelForm):
         help_text=Meta.help_texts['schedule'],
     )
 
-    execution_prompts_required = forms.CharField(
-        max_length=Job.execution_prompts_max_len,
-        validators=[RegexValidator(
-            regex=Job.execution_prompts_regex,
-            message='The provided expression is not in a valid format',
-        )],
-        required=False,
-        label=Meta.labels['execution_prompts_required'],
-        help_text=Meta.help_texts['execution_prompts_required'],
-    )
-    execution_prompts_optional = forms.CharField(
-        max_length=Job.execution_prompts_max_len,
-        validators=[RegexValidator(
-            regex=Job.execution_prompts_regex,
-            message='The provided expression is not in a valid format',
-        )],
-        required=False,
-        label=Meta.labels['execution_prompts_optional'],
-    )
-
 
 @login_required
 @ui_endpoint_wrapper_kwargs

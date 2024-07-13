@@ -55,6 +55,94 @@
     </div>
 {%   endif %}
 {% endfor %}
+
+    <div class="mb-3 row" >
+        <label class="form-label col-sm-2 col-form-label">Execution Prompts</label>
+        <div class="col-sm-10">
+            <button type="button" id="aw-job-form-prompt-add" class="btn btn-success" title="Add">Add Prompt</button>
+        </div>
+        <div class="help-block">
+            <b>Info:</b> Define prompts for custom job executions.
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="id_prompt_limit" class="form-label col-sm-2 col-form-label form-label-sub">Prompt Limit</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="id_prompt_limit" name="prompt_limit">
+                <option value="True" {% if existing|check_job_prompt_flag:"limit" %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not existing|check_job_prompt_flag:"limit" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="id_prompt_mode_check" class="form-label col-sm-2 col-form-label form-label-sub">Prompt Check-Mode</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="id_prompt_mode_check" name="prompt_mode_check">
+                <option value="True" {% if existing|check_job_prompt_flag:"mode_check" %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not existing|check_job_prompt_flag:"mode_check" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="id_prompt_mode_diff" class="form-label col-sm-2 col-form-label form-label-sub">Prompt Difference-Mode</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="id_prompt_mode_diff" name="prompt_mode_diff">
+                <option value="True" {% if existing|check_job_prompt_flag:"mode_diff" %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not existing|check_job_prompt_flag:"mode_diff" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="id_prompt_tags" class="form-label col-sm-2 col-form-label form-label-sub">Prompt Tags</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="id_prompt_tags" name="prompt_tags">
+                <option value="True" {% if existing|check_job_prompt_flag:"tags" %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not existing|check_job_prompt_flag:"tags" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="id_prompt_skip_tags" class="form-label col-sm-2 col-form-label form-label-sub">Prompt Skip-Tags</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="id_prompt_skip_tags" name="prompt_skip_tags">
+                <option value="True" {% if existing|check_job_prompt_flag:"skip_tags" %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not existing|check_job_prompt_flag:"skip_tags" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="id_prompt_verbosity" class="form-label col-sm-2 col-form-label form-label-sub">Prompt Verbosity</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="id_prompt_verbosity" name="prompt_verbosity">
+                <option value="True" {% if existing|check_job_prompt_flag:"verbosity" %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not existing|check_job_prompt_flag:"verbosity" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="id_prompt_env_vars" class="form-label col-sm-2 col-form-label form-label-sub">Prompt Environmental-Variables</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="id_prompt_env_vars" name="prompt_env_vars">
+                <option value="True" {% if existing|check_job_prompt_flag:"env_vars" %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not existing|check_job_prompt_flag:"env_vars" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="id_prompt_cmd_args" class="form-label col-sm-2 col-form-label form-label-sub">Prompt CLI-Arguments</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="id_prompt_cmd_args" name="prompt_cmd_args">
+                <option value="True" {% if existing|check_job_prompt_flag:"cmd_args" %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not existing|check_job_prompt_flag:"cmd_args" %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
+    <br>
+    <div id="aw-job-form-prompts"></div>
 </div>
 <br>
 <button type="submit" class="btn btn-primary" title="Save">Save</button>
+
+<script>
+    const PROMPT_CNF = '{{ existing|get_value:"execution_prompts" }}';
+</script>

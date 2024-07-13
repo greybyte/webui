@@ -4,8 +4,15 @@
 
 .. include:: ../_include/warn_develop.rst
 
-.. |job_exec| image:: ../_static/img/job_exec.png
+.. |job_exec| image:: ../_static/img/job_execution.png
    :class: wiki-img
+
+.. |job_prompts1| image:: ../_static/img/job_prompts_1.png
+   :class: wiki-img
+
+.. |job_prompts2| image:: ../_static/img/job_prompts_2.png
+   :class: wiki-img
+
 
 ====
 Jobs
@@ -41,8 +48,10 @@ You have two options to execute a job:
 
     The fields available as overrides can be configured in the job settings!
 
-    You can define required and optional overrides.
+    |job_prompts1|
+
+    |job_prompts2|
+
+    These will be shown in the job overview:
 
     |job_exec|
-
-    Extra-vars can also be prompted. These need to be supplied in the following format: :code:`var={VAR-NAME}#{DISPLAY-NAME}` per example: :code:`var=add_user#User to add`
