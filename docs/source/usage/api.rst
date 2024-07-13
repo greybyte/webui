@@ -2,11 +2,8 @@
 
 .. include:: ../_include/head.rst
 
-.. include:: ../_include/warn_develop.rst
-
 .. |api_docs| image:: ../_static/img/api_docs.png
    :class: wiki-img
-
 
 ===
 API

@@ -2,8 +2,6 @@
 
 .. include:: ../_include/head.rst
 
-.. include:: ../_include/warn_develop.rst
-
 .. |repo_ui| image:: ../_static/img/repo_ui.png
    :class: wiki-img
 

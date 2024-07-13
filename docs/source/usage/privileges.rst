@@ -2,8 +2,6 @@
 
 .. include:: ../_include/head.rst
 
-.. include:: ../_include/warn_develop.rst
-
 .. |perm_users_groups| image:: ../_static/img/permission_users_groups.png
    :class: wiki-img
 

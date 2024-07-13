@@ -2,8 +2,6 @@
 
 .. include:: ../_include/head.rst
 
-.. include:: ../_include/warn_develop.rst
-
 .. |alert_email| image:: ../_static/img/alert_email.png
    :class: wiki-img
 

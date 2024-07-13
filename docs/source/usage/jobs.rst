@@ -2,8 +2,6 @@
 
 .. include:: ../_include/head.rst
 
-.. include:: ../_include/warn_develop.rst
-
 .. |job_exec| image:: ../_static/img/job_execution.png
    :class: wiki-img
 

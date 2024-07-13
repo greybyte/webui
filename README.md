@@ -12,8 +12,6 @@ The goal is to allow users to quickly install & run a WebUI for using Ansible lo
 
 Keep it simple.
 
-**This project is still in early development! DO NOT USE IN PRODUCTION!**
-
 ----
 
 ## Setup
