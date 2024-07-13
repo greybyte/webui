@@ -41,7 +41,7 @@ function buildExecutionFields(promptsSerialized) {
                 let fieldHtml = document.getElementById(tmplElem).innerHTML;
                 fieldHtml = fieldHtml.replaceAll('${PRETTY}', name);
                 fieldHtml = fieldHtml.replaceAll('${FIELD}', field);
-                fieldHtml = fieldHtml.replaceAll('${attrs}', 'required');
+                fieldHtml = fieldHtml.replaceAll('${attrs}', '');
                 prompts.push(fieldHtml);
 
             } else {
