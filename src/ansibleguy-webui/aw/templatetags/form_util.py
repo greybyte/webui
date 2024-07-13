@@ -177,7 +177,7 @@ PROMPT_FLAG_DEFAULTS = {
 
 @register.filter
 def check_job_prompt_flag(existing: dict, flag: str) -> bool:
-    if 'execution_prompts' not in existing:
+    if 'execution_prompts' not in existing or not isinstance(existing['execution_prompts'], str):
         return PROMPT_FLAG_DEFAULTS[flag]
 
     return flag in existing['execution_prompts'].split(Job.execution_prompt_separator)
