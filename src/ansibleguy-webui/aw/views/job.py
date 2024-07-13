@@ -23,7 +23,7 @@ def manage(request) -> HttpResponse:
     executions = {}
     next_executions = {}
     execution_results_hosts = {}
-    credentials_user = [creds for creds in JobUserCredentials.objects.filter(user=request.user)]
+    credentials_user = JobUserCredentials.objects.filter(user=request.user)
     credentials_global = [
         creds for creds in JobGlobalCredentials.objects.all()
         if has_credentials_permission(user=request.user, credentials=creds, permission_needed=CHOICE_PERMISSION_READ)
