@@ -171,6 +171,7 @@ PROMPT_FLAG_DEFAULTS = {
     'env_vars': False,
     'cmd_args': False,
     'verbosity': False,
+    'credentials': False,
 }
 
 

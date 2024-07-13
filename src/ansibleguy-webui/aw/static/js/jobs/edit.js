@@ -376,14 +376,17 @@ $( document ).ready(function() {
         for (let field of form[0]) {
             if (['input', 'select'].includes(field.localName)) {
                 if (field.name.startsWith('prompt_')) {
+                    let fieldName = field.name.replaceAll('prompt_', '');
                     let promptNameParts = field.name.split('_');
-                    if (promptNameParts.length == 2) {
-                        prompts.push(promptNameParts[1]);
+                    if (PROMPT_SIMPLE_TYPES.includes(fieldName)) {
+                        if (field.value == 'True') {
+                            prompts.push(fieldName);
+                        }
                         continue;
                     }
 
                     let promptId = promptNameParts[1];
-                    let fieldName = promptNameParts[2];
+                    fieldName = promptNameParts[2];
                     if (promptFields[promptId] === undefined) {
                         promptFields[promptId] = [];
                     }
