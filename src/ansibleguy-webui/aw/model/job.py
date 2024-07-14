@@ -108,7 +108,7 @@ class Job(BaseJob):
     execution_prompts_max_len = 5000
     execution_prompt_separator = ';'
     execution_prompt_arg_separator = '#'
-    execution_prompts = models.CharField(max_length=execution_prompts_max_len, **DEFAULT_NONE)
+    execution_prompts = models.CharField(max_length=execution_prompts_max_len, default='limit,mode_check,tags')
 
     def __str__(self) -> str:
         limit = '' if self.limit is None else f' [{self.limit}]'
