@@ -2,6 +2,12 @@
 
 ## Version 0
 
+### 0.0.23
+
+* Fix for possible XSS
+* Implemented [Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) to protect against XSS and injections
+* Migrated vendor CSS/JS to be included in the package
+
 ### 0.0.22
 
 * Improved [custom execution prompts](https://webui.ansibleguy.net/en/latest/usage/jobs.html#execute)

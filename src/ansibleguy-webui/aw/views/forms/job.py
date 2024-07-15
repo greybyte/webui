@@ -92,7 +92,7 @@ def job_edit(request, job_id: int = None, clone: bool = False) -> HttpResponse:
     )
     return render(
         request, status=200, template_name='jobs/edit.html',
-        context={'form': job_form_html, 'form_api': form_api, 'form_method': form_method}
+        context={'form': job_form_html, 'form_api': form_api, 'form_method': form_method, 'script_unsafe_inline': True}
     )
 
 
