@@ -18,7 +18,7 @@
   script-src unsafe-eval is for the setInterval calls..
   script_unsafe_inline is for template-generated inline-scripts (only on job-edit view)
 {% endcomment %}
-<link rel="icon" {% if get_logo|find:"svg" %}type="image/svg"{% endif %} href="{% get_logo %}">
+<link rel="icon" {% if get_logo|find:"svg" %}type="image/svg"{% endif %} href="{% get_logo %}" referrerpolicy="no-referrer">
 
 <link href="{% static 'vendor/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" crossorigin="anonymous" referrerpolicy="no-referrer">
 <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css" crossorigin="anonymous" referrerpolicy="no-referrer">
