@@ -1,10 +1,10 @@
-ELEM_ID_TMPL_ROW2 = 'aw-api-data-tmpl-row2';
-ELEM_ID_TMPL_FIELD_TEXT = 'aw-api-data-tmpl-exec-text';
-ELEM_ID_TMPL_FIELD_CHOICES = 'aw-api-data-tmpl-exec-choices';
-ELEM_ID_TMPL_FIELD_CREDS = 'aw-api-data-tmpl-exec-creds';
-ELEM_ID_TMPL_FIELD_BOOL = 'aw-api-data-tmpl-exec-bool';
-ELEM_ID_TMPL_FIELD_VERB = 'aw-api-data-tmpl-exec-verbosity';
-EXEC_BOOL_FIELDS = ['mode_check', 'mode_diff'];
+const ELEM_ID_TMPL_ROW2 = 'aw-api-data-tmpl-row2';
+const ELEM_ID_TMPL_FIELD_TEXT = 'aw-api-data-tmpl-exec-text';
+const ELEM_ID_TMPL_FIELD_CHOICES = 'aw-api-data-tmpl-exec-choices';
+const ELEM_ID_TMPL_FIELD_CREDS = 'aw-api-data-tmpl-exec-creds';
+const ELEM_ID_TMPL_FIELD_BOOL = 'aw-api-data-tmpl-exec-bool';
+const ELEM_ID_TMPL_FIELD_VERB = 'aw-api-data-tmpl-exec-verbosity';
+const EXEC_BOOL_FIELDS = ['mode_check', 'mode_diff'];
 const PROMPT_SIMPLE_TYPES = ['tags', 'skip_tags', 'mode_check', 'mode_diff', 'limit', 'env_vars', 'cmd_args', 'verbosity', 'credentials'];
 const PROMPT_SEPARATOR = ';';
 const PROMPT_ARG_SEPARATOR = '#';
@@ -142,8 +142,6 @@ function updateApiTableDataJob(row, row2, entry) {
     execTemplate = execTemplate.replaceAll('${ID}', entry.id);
     row2.innerHTML = execTemplate;
     let prompts = buildExecutionFields(entry.execution_prompts);
-
-    console.log(prompts);
 
     let execForm = document.getElementById('aw-job-exec-' + entry.id);
     execForm.innerHTML = prompts.join('<br>') + execForm.innerHTML;

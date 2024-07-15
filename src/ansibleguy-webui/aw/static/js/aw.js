@@ -225,6 +225,15 @@ function escapeHTML(data) {
     return data;
 }
 
+function escapeQuotes(data) {
+    if (!is_set(data)) {
+        return data;
+    }
+    data = data.replaceAll('"', '\x22');
+    data = data.replaceAll('&', '&amp;');
+    return data;
+}
+
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }

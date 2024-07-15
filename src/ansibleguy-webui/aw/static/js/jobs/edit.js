@@ -346,7 +346,7 @@ function initPromptInputs() {
         let fields = prompt.split(PROMPT_ARG_SEPARATOR);
         let regex = fields[5];
         if (is_set(regex)) {
-            regex = atob(regex);
+            regex = escapeQuotes(atob(regex));
         }
 
         addPromptInputsWithDefaults(fields[0], fields[1], fields[2], fields[3], fields[4], regex);
@@ -408,7 +408,7 @@ $( document ).ready(function() {
             prompt.push(promptFields[i].kind);
             prompt.push(promptFields[i].required);
             prompt.push(promptFields[i].choices);
-            prompt.push(btoa(promptFields[i].regex));
+            prompt.push(btoa(escapeQuotes(promptFields[i].regex)));
             prompts.push(prompt.join(PROMPT_ARG_SEPARATOR));
         }
 
