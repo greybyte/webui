@@ -9,12 +9,16 @@ const PROMPT_SIMPLE_TYPES = ['tags', 'skip_tags', 'mode_check', 'mode_diff', 'li
 const PROMPT_SEPARATOR = ';';
 const PROMPT_ARG_SEPARATOR = '#';
 const PROMPT_CHOICE_SEPARATOR = ',';
+const PROMPT_ENFORCE = 'enforce';
+const PROMPT_LIMIT = 'limit';
+const PROMPT_LIMIT_REQUIRE = 'limit_req';
+const PROMPT_META_FIELDS = [PROMPT_ENFORCE, PROMPT_LIMIT_REQUIRE];
 const PROMPT_SIMPLE_NAMES = [];
 PROMPT_SIMPLE_NAMES['tags'] = 'Tags';
 PROMPT_SIMPLE_NAMES['skip_tags'] = 'Skip Tags';
 PROMPT_SIMPLE_NAMES['mode_check'] = 'Check Mode';
 PROMPT_SIMPLE_NAMES['mode_diff'] = 'Difference Mode';
-PROMPT_SIMPLE_NAMES['limit'] = 'Limit';
+PROMPT_SIMPLE_NAMES[PROMPT_LIMIT] = 'Limit';
 PROMPT_SIMPLE_NAMES['env_vars'] = 'Environmental Variables';
 PROMPT_SIMPLE_NAMES['cmd_args'] = 'CLI Arguments';
 PROMPT_SIMPLE_NAMES['verbosity'] = 'Verbosity';
@@ -28,7 +32,10 @@ function buildExecutionFields(promptsSerialized) {
         for (field of promptsSerialized.split(PROMPT_SEPARATOR)) {
             let tmplElem = ELEM_ID_TMPL_FIELD_TEXT;
 
-            if (PROMPT_SIMPLE_TYPES.includes(field)) {
+            if (PROMPT_META_FIELDS.includes(field)) {
+                continue;
+
+            } else if (PROMPT_SIMPLE_TYPES.includes(field)) {
                 let name = PROMPT_SIMPLE_NAMES[field];
 
                 if (EXEC_BOOL_FIELDS.includes(field)) {
@@ -41,7 +48,11 @@ function buildExecutionFields(promptsSerialized) {
                 let fieldHtml = document.getElementById(tmplElem).innerHTML;
                 fieldHtml = fieldHtml.replaceAll('${PRETTY}', name);
                 fieldHtml = fieldHtml.replaceAll('${FIELD}', field);
-                fieldHtml = fieldHtml.replaceAll('${attrs}', '');
+                if (field == PROMPT_LIMIT  && promptsSerialized.includes(PROMPT_LIMIT_REQUIRE)) {
+                    fieldHtml = fieldHtml.replaceAll('${attrs}', 'required');
+                } else {
+                    fieldHtml = fieldHtml.replaceAll('${attrs}', '');
+                }
                 prompts.push(fieldHtml);
 
             } else {
@@ -133,6 +144,12 @@ function updateApiTableDataJob(row, row2, entry) {
     } else {
         actionsTemplate = actionsTemplate.replaceAll('${EXEC_ID_1}', 0);
     }
+    if (entry.execution_prompts.includes(PROMPT_ENFORCE)) {
+        actionsTemplate = actionsTemplate.replaceAll('${disable}', 'disabled');
+    } else {
+        actionsTemplate = actionsTemplate.replaceAll('${disable}', '');
+    }
+
     row.cells[7].innerHTML = actionsTemplate;
 
     // custom execution

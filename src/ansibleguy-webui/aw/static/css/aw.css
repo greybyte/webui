@@ -463,6 +463,15 @@ input:invalid {
     float: right;
 }
 
+#aw-job-form-prompts-config {
+    margin-left: 2vw;
+    margin-top: 2vh;
+    padding-left: 1vw;
+    border-left-width: 2px;
+    border-left-style: solid;
+    border-color: var(--tc1);
+}
+
 /* STOP forms */
 
 /* START errors */
