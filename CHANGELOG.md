@@ -7,6 +7,8 @@
 * Fix for possible XSS
 * Implemented [Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) to protect against XSS and injections
 * Migrated vendor CSS/JS to be included in the package
+* Option to enforce execution prompts
+* Fix use of GitHub private repositories
 
 ### 0.0.22
 

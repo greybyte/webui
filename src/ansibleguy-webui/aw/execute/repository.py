@@ -206,11 +206,14 @@ class ExecuteRepository:
 
             if origin.find('://') != -1 and origin.find('ssh://') == -1:
                 # not ssh
-                if origin.find('@') == -1 and \
-                    is_set(credentials.connect_user) and \
-                        is_set(credentials.connect_pass):
-                    proto, origin_host = origin.split('://')
-                    origin = f'{proto}://{credentials.connect_user}:{credentials.connect_pass}@{origin_host}'
+                if origin.find('@') == -1:
+                    proto, origin_host = origin.split('://', 1)
+                    if is_set(credentials.connect_user) and is_set(credentials.connect_pass):
+                        origin = f'{proto}://{credentials.connect_user}:{credentials.connect_pass}@{origin_host}'
+
+                    elif is_set(credentials.connect_pass):
+                        # token authentication
+                        origin = f'{proto}://{credentials.connect_pass}@{origin_host}'
 
             else:
                 # ssh

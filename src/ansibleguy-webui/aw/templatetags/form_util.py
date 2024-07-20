@@ -172,6 +172,8 @@ PROMPT_FLAG_DEFAULTS = {
     'cmd_args': False,
     'verbosity': False,
     'credentials': False,
+    'limit_req': False,
+    'enforce': False,
 }
 
 
