@@ -144,7 +144,7 @@ function updateApiTableDataJob(row, row2, entry) {
     } else {
         actionsTemplate = actionsTemplate.replaceAll('${EXEC_ID_1}', 0);
     }
-    if (entry.execution_prompts.includes(PROMPT_ENFORCE)) {
+    if (is_set(entry.execution_prompts) && entry.execution_prompts.includes(PROMPT_ENFORCE)) {
         actionsTemplate = actionsTemplate.replaceAll('${disable}', 'disabled');
     } else {
         actionsTemplate = actionsTemplate.replaceAll('${disable}', '');
