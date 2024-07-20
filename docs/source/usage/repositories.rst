@@ -83,3 +83,11 @@ You can specify which :code:`known_hosts` file AW should use using the :ref:`Sys
 You are able to append the port to the origin string like so: :code:`git@git.intern -p1337`
 
 The SSH-key configured in the linked credentials will be used.
+
+----
+
+Example GitHub Private-Repository
+=================================
+
+1. Create global Credentials that use your Access-Token as :code:`connect password`
+2. Create the Git-Repository and link the Credentials
