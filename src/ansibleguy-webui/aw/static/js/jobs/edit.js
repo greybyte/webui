@@ -426,7 +426,7 @@ $( document ).ready(function() {
 
         return false;
     });
-    $(".aw-main").on("click", "#aw-job-form-prompt-add", function(){
+    $(".aw-main").on("click", ".aw-job-form-prompt-add", function(){
         addPromptInputs();
     });
     $(".aw-main").on("click", ".aw-job-form-prompt-del", function(){
