@@ -13,7 +13,7 @@ The goal is to allow users to quickly install & run a WebUI for using Ansible lo
 Keep it simple.
 
 <a href="https://webui.ansibleguy.net/en/latest/usage/jobs.html">
-<img src="https://raw.githubusercontent.com/ansibleguy/webui/latest/docs/source/_static/img/job_execution.png" alt="Job Execution" width="500"/>
+<img src="https://raw.githubusercontent.com/ansibleguy/webui/latest/docs/source/_static/img/job_execution.png" alt="Job Execution" width="80%"/>
 </a>
 
 ----
