@@ -6,10 +6,10 @@ _logo = 'https://raw.githubusercontent.com/ansibleguy/webui/latest/src/ansiblegu
 project = 'AnsibleGuy WebUI'
 copyright = f'{datetime.now().year}, AnsibleGuy'
 author = 'AnsibleGuy'
-extensions = ['sphinx_rtd_theme']
+extensions = ['piccolo_theme']
 templates_path = ['_templates']
 exclude_patterns = []
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'piccolo_theme'
 html_static_path = ['_static']
 html_logo = _logo
 html_favicon = _logo
@@ -21,4 +21,8 @@ source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',
 }
-html_theme_options = {}
+html_theme_options = {
+    'banner_text': 'Check out <a href="https://github.com/ansibleguy/webui">the repository on GitHub</a> | '
+                   'Report <a href="https://github.com/ansibleguy/webui/issues/new/choose">missing/incorrect information or broken links</a>'
+}
+html_short_title = 'Ansible WebUI'
