@@ -2,7 +2,8 @@
 dist/
 venv/
 ansible_webui.egg-info/
-__pychache__.py
+__pycache__.py
+**/__pycache__/
 **/aw*.db
 **/aw*.db.*bak*
 **/aw*.db-shm

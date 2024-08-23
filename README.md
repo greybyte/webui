@@ -26,10 +26,10 @@ Requires Python >=3.10
 
 ```bash
 # install
-python3 -m pip install ansibleguy-webui
+python3 -m pip install ansibleguy_webui
 
 # run
-python3 -m ansibleguy-webui
+python3 -m ansibleguy_webui
 ```
 
 ### Docker

@@ -63,7 +63,7 @@ bash scripts/update_version.sh
 export AW_VERSION="$(cat VERSION)"
 
 # run
-python3 src/ansibleguy-webui/
+python3 src/ansibleguy_webui/
 ```
 
 ### Using Docker
@@ -132,7 +132,7 @@ To make it work:
       def __init__(self, *args, **kwargs):
           super().__init__(*args, **kwargs)
           self.fields['jobs'] = serializers.MultipleChoiceField(choices=[job.id for job in Job.objects.all()])
-  
+
       jobs = serializers.MultipleChoiceField(allow_blank=True, choices=[])
    ```
 
@@ -144,12 +144,12 @@ To make it work:
       for job_id in job_ids:
           try:
               jobs.append(Job.objects.get(id=job_id))
-    
+
           except ObjectDoesNotExist:
               continue
-    
+
       alert.jobs.set(jobs)
-   
+
    update_jobs(alert=alert, job_ids=serializer.validated_data.pop('jobs'))
    AlertGlobal.objects.filter(id=alert.id).update(**serializer.validated_data)
    ```

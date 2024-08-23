@@ -19,7 +19,7 @@ then
   git ls-files . --exclude-standard --others | grep 'migrations' | xargs --no-run-if-empty rm
 fi
 
-cd "$(pwd)/src/ansibleguy-webui/"
+cd "$(pwd)/src/ansibleguy_webui/"
 
 echo ''
 echo 'Creating migrations'

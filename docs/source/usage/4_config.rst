@@ -53,7 +53,7 @@ You are able to provide the following settings by using a `YAML <https://www.red
  **WARNING**: If possible - set your secrets as environmental variables. Users that are allowed to execute/modify jobs :ref:`are be able to read the content of the config-file <usage_security_issues>`
 
 
-* Provide it by flag: :code:`python3 -m ansibleguy-webui -c /etc/ansible-webui/config.yml`
+* Provide it by flag: :code:`python3 -m ansibleguy_webui -c /etc/ansible-webui/config.yml`
 
 * Provide it by env-var: :code:`AW_CONFIG=/etc/ansible-webui/config.yml`
 
@@ -227,11 +227,11 @@ Normal users will not have to use these.
    .. code-block:: bash
 
         # if running non-release version
-        python3 -m ansibleguy-webui.manage makemigrations
-        python3 -m ansibleguy-webui.manage makemigrations aw
+        python3 -m ansibleguy_webui.manage makemigrations
+        python3 -m ansibleguy_webui.manage makemigrations aw
 
         # all
-        python3 -m ansibleguy-webui.manage migrate
+        python3 -m ansibleguy_webui.manage migrate
 
 
 * **AW_ENV**
@@ -265,11 +265,11 @@ With basic setup:
 
     export AW_SECRET=aaaaaaaaaaaaaaaaaaaaabaaaaaaaaaaaaa
     export AW_PROXY=1
-    python3 -m ansibleguy-webui
+    python3 -m ansibleguy_webui
 
     # OR
 
-    AW_SECRET=aaaaaaaaaaaaaaaaaaaaabaaaaaaaaaaaaa python3 -m ansibleguy-webui
+    AW_SECRET=aaaaaaaaaaaaaaaaaaaaabaaaaaaaaaaaaa python3 -m ansibleguy_webui
 
 When using Docker:
 

@@ -36,5 +36,5 @@ where = ["src"]
 "*" = ["*.html", "*.js", "*.css", "*.svg", "*.txt"]
 
 # [project.scripts]
-# ansibleguy-webui = "ansibleguy-webui.__main__"
-# ansibleguy-webui-db = "ansibleguy-webui.manage"
+# ansibleguy_webui = "ansibleguy_webui.__main__"
+# ansibleguy_webui-db = "ansibleguy_webui.manage"
