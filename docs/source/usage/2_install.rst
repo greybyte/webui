@@ -31,7 +31,7 @@ Requires Python >=3.10
 
 .. code-block:: bash
 
-    python3 -m pip install ansibleguy_webui
+    python3 -m pip install ansibleguy-webui
 
 **Using docker**:
 

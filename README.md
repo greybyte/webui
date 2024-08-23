@@ -26,7 +26,7 @@ Requires Python >=3.10
 
 ```bash
 # install
-python3 -m pip install ansibleguy_webui
+python3 -m pip install ansibleguy-webui
 
 # run
 python3 -m ansibleguy_webui
